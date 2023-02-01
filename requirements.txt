@@ -1,0 +1,15 @@
+black
+breathe
+csvkit
+lizard
+metrixpp
+networkx
+notebook
+pip-chill
+seaborn
+sphinx-rtd-theme
+sphinx-sitemap
+exhale
+scipy
+tqdm
+joblib
