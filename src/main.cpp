@@ -314,10 +314,10 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
         // help message
         if (result.count("help")) {
             // load instance names
-            std::ifstream i_file("../instances/instance_list.txt");
+            std::ifstream i_file("../instances/instance_list_wvcp.txt");
             if (!i_file) {
                 fmt::print(stderr,
-                           "Unable to find : ../instances/instance_list.txt\n"
+                           "Unable to find : ../instances/instance_list_wvcp.txt\n"
                            "Check if you imported the submodule instance, commands :\n"
                            "\tgit submodule init\n"
                            "\tgit submodule update\n");
