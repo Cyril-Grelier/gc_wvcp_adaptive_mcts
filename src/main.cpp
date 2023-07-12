@@ -83,9 +83,15 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "name of the instance (located in instance/wvcp_reduced/)",
             cxxopts::value<std::string>()->default_value(
                 //
+                // "R50_1g"
+                // "R50_9gb"
+                // "flat1000_76_0"
+                "DSJC125.1g"
+                // "zeroin.i.1"
                 // "p06"
+                // "r06"
                 // "p42"
-                "queen10_10"
+                // "queen10_10"
                 // "le450_25b"
                 // "queen12_12"
                 // "DSJR500.1"
@@ -119,8 +125,8 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "method (mcts, local_search)",
             cxxopts::value<std::string>()->default_value(
                 //
-                // "mcts"
-                "local_search"
+                "mcts"
+                // "local_search"
                 //
                 ));
 
@@ -184,9 +190,10 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "Initialization of the solutions (random, constrained, deterministic)",
             cxxopts::value<std::string>()->default_value(
                 //
+                // "total_random"
                 // "random"
-                "constrained"
-                // "deterministic"
+                // "constrained"
+                "deterministic"
                 //
                 ));
 
@@ -207,9 +214,20 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "can by override by nb_iter_local_search or o and t time",
             cxxopts::value<int>()->default_value(
                 //
-                // time_limit_default
+                time_limit_default
                 // "2"
+                // "-1"
+                //
+                ));
+
+        options.allow_unrecognised_options().add_options()(
+            "k,bound_nb_colors",
+            "bound on the number of colors, if -1 the bound is the maximum degree of the "
+            "graph",
+            cxxopts::value<int>()->default_value(
+                //
                 "-1"
+                // "14"
                 //
                 ));
 
@@ -224,13 +242,13 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "Adaptive selection of operators for algo mem",
             cxxopts::value<std::string>()->default_value(
                 //
-                // "none"
+                "none"
                 // "iterated"
                 // "random"
                 // "deleter"
                 // "roulette_wheel"
                 // "pursuit"
-                "ucb"
+                // "ucb"
                 // "neural_net"
                 //
                 ));
@@ -246,14 +264,15 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "Local search selected (to give multiple separate with :)",
             cxxopts::value<std::string>()->default_value(
                 //
-                // "none"
+                "none"
                 // "hill_climbing"
                 // "tabu_weight"
                 // "tabu_col"
+                // "random_walk_wvcp"
                 // "partial_col"
                 // "afisa"
                 // "afisa_original"
-                "redls"
+                // "redls"
                 // "redls_freeze"
                 // "ilsts"
                 // "ilsts:redls"
@@ -272,8 +291,8 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "Simulation for MCTS (no_ls, always_ls, depth, fit, depth_fit)",
             cxxopts::value<std::string>()->default_value(
                 //
-                // "no_ls"
-                "always_ls"
+                "no_ls"
+                // "always_ls"
                 // "fit"
                 // "depth"
                 // "level"
@@ -378,6 +397,14 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
 
         int max_time_local_search = result["max_time_local_search"].as<int>();
 
+        int bound_nb_colors = result["bound_nb_colors"].as<int>();
+        // if bound_nb_colors is -1, set it to the max degree + 1
+        if (bound_nb_colors == -1) {
+            bound_nb_colors =
+                (*std::max_element(Graph::g->degrees.begin(), Graph::g->degrees.end())) +
+                1;
+        }
+
         const std::string local_search = result["local_search"].as<std::string>();
         const std::string adaptive = result["adaptive"].as<std::string>();
         const int window_size = result["window_size"].as<int>();
@@ -409,6 +436,7 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
                                                      initialization,
                                                      nb_iter_local_search,
                                                      max_time_local_search,
+                                                     bound_nb_colors,
                                                      local_search,
                                                      adaptive,
                                                      window_size,

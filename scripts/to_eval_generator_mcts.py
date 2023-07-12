@@ -16,6 +16,7 @@ n,nb_max_iterations
 I,initialization
 N,nb_iter_local_search
 M,max_time_local_search
+k,bound_nb_colors
 c,coeff_exploi_explo
 A,adaptive
 w,window_size
@@ -42,6 +43,15 @@ def get_target(instance: str, problem: str):
                 return int(score)
             return 0
     print(f"instance {instance} not found in instances/best_scores_wvcp.txt")
+
+
+def get_bounds_nb_colors():
+    bounds = {}
+    with open("bounds_nb_colors.csv", "r", encoding="utf8") as file:
+        for line in file.readlines():
+            instance, bound = line[:-1].split(" ")
+            bounds[instance] = int(bound)
+    return bounds
 
 
 def get_nb_vertices(instance: str):
@@ -73,17 +83,19 @@ with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
 
 method = "mcts"
 
-rand_seeds = list(range(20))
+rand_seeds = list(range(1))
 
+bounds = get_bounds_nb_colors()
+use_bounds = False
 target = 0
 use_target = "false"  # false true
-objective = "reached"  # optimality reached
-time_limit = 3600 * 5
+objective = "optimality"  # optimality reached
+time_limit = 3600 * 1
 nb_max_iterations = 9000000000000000000
 initializations = [
     # "random",
-    "constrained",
-    # "deterministic",
+    # "constrained",
+    "deterministic",
 ]
 nb_iter_local_search = 9000000000000000000
 max_time_local_search = -1
@@ -102,14 +114,14 @@ coeff_exploi_explo = [
     # "5",
 ]
 adaptives = [
-    # "none",
+    "none",
     # "iterated",
-    "random",
+    # "random",
     # "deleter",
-    "roulette_wheel",
-    "pursuit",
-    "ucb",
-    "neural_net",
+    # "roulette_wheel",
+    # "pursuit",
+    # "ucb",
+    # "neural_net",
 ]
 window_sizes = [
     # 10,
@@ -119,7 +131,7 @@ window_sizes = [
     # 100,
 ]
 local_searchs = [
-    # "none",
+    "none",
     # "tabu_col",
     # "hill_climbing",
     # "afisa",
@@ -129,12 +141,12 @@ local_searchs = [
     # "ilsts",
     # "redls_freeze",
     # "ilsts:redls:tabu_weight:afisa_original:none"
-    "ilsts:redls:tabu_weight:afisa_original"
+    # "ilsts:redls:tabu_weight:afisa_original"
     # "ilsts:redls:tabu_weight"
 ]
 simulations = [
-    # "no_ls",
-    "always_ls",
+    "no_ls",
+    # "always_ls",
     # "fit",
     # "depth",
     # "level",
@@ -144,7 +156,8 @@ simulations = [
 O_time = 0
 P_time = 0.02
 
-output_directory = f"/scratch/LERIA/grelier_c/ad_{instances_set[1]}"
+output_directory = f"/scratch/LERIA/grelier_c/mcts_no_bounds_{instances_set[1]}"
+output_directory = f"./mcts_no_bounds_{instances_set[1]}"
 # output_directory = f"ad_{instances_set[1]}"
 
 os.mkdir(f"{output_directory}/")
@@ -165,10 +178,13 @@ with open("to_eval_mcts", "w", encoding="UTF8") as file:
                     for window_size in window_sizes:
                         for simulation in simulations:
                             for instance in instances:
-                                nb_max_iterations = int(
-                                    3600 / (0.02 * get_nb_vertices(instance))
-                                )
+                                # nb_max_iterations = int(
+                                #     3600 / (0.02 * get_nb_vertices(instance))
+                                # )
                                 target = get_target(instance, problem)
+                                bound = -1
+                                if use_bounds:
+                                    bound = bounds[instance]
                                 for rand_seed in rand_seeds:
                                     file.write(
                                         f"./gc_wvcp "
@@ -184,6 +200,7 @@ with open("to_eval_mcts", "w", encoding="UTF8") as file:
                                         f" --initialization {initialization}"
                                         f" --nb_iter_local_search {nb_iter_local_search}"
                                         f" --max_time_local_search {max_time_local_search}"
+                                        f" --bound_nb_colors {bound}"
                                         f" --coeff_exploi_explo {coeff}"
                                         f" --adaptive {adaptive}"
                                         f" --window_size {window_size}"

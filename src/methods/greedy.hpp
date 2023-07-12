@@ -6,8 +6,15 @@
 typedef void (*init_ptr)(Solution &solution);
 
 /**
- * @brief Greedy algorithm, that color vertices starting with next vertex to color in the
- * MCTS tree (0 by default) and giving possibility to add a new color any time
+ * @brief Shuffle the vertices and color them with a random color
+ *
+ * @param solution solution to use, the solution will be modified
+ */
+void total_random(Solution &solution);
+
+/**
+ * @brief Greedy algorithm, that color vertices starting with next vertex to color in
+ * the MCTS tree (0 by default) and giving possibility to add a new color any time
  *
  * @param solution solution to use, the solution will be modified
  */

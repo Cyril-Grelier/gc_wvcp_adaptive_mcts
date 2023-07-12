@@ -2,6 +2,17 @@
 
 #include "../utils/random_generator.hpp"
 
+void total_random(Solution &solution) {
+    // shuffle the vertices
+    std::vector<int> vertices(Graph::g->nb_vertices);
+    std::iota(vertices.begin(), vertices.end(), 0);
+    std::shuffle(vertices.begin(), vertices.end(), rd::generator);
+    for (const auto vertex : vertices) {
+        auto possible_colors = solution.available_colors(vertex);
+        solution.add_to_color(vertex, rd::choice(possible_colors));
+    }
+}
+
 void greedy_random(Solution &solution) {
     for (int vertex = solution.first_free_vertex(); vertex < Graph::g->nb_vertices;
          ++vertex) {
@@ -35,6 +46,8 @@ void greedy_worst(Solution &solution) {
 }
 
 init_ptr get_initialization_fct(const std::string &initialization) {
+    if (initialization == "total_random")
+        return total_random;
     if (initialization == "random")
         return greedy_random;
     if (initialization == "constrained")
@@ -45,6 +58,6 @@ init_ptr get_initialization_fct(const std::string &initialization) {
         return greedy_worst;
     fmt::print(stderr,
                "Unknown initialization, please select : "
-               "random, constrained, deterministic, worst\n");
+               "total_random, random, constrained, deterministic, worst\n");
     exit(1);
 }

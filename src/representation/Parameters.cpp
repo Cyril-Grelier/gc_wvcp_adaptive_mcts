@@ -19,6 +19,7 @@ Parameters::Parameters(const std::string &problem_,
                        const std::string &initialization_,
                        const long nb_iter_local_search_,
                        const int max_time_local_search_,
+                       const int bound_nb_colors_,
                        const std::string &local_search_,
                        const std::string &adaptive_,
                        const int window_size_,
@@ -41,6 +42,7 @@ Parameters::Parameters(const std::string &problem_,
       initialization(initialization_),
       nb_iter_local_search(nb_iter_local_search_),
       max_time_local_search(max_time_local_search_),
+      bound_nb_colors(bound_nb_colors_),
       local_search(split_string(local_search_, ":")),
       adaptive(adaptive_),
       window_size(window_size_),
@@ -86,6 +88,7 @@ Parameters::Parameters(const std::string &problem_,
                "initialization,"
                "nb_iter_local_search,"
                "max_time_local_search,"
+               "bound_nb_colors,"
                "local_search,"
                "adaptive,"
                "window_size,"
@@ -95,7 +98,7 @@ Parameters::Parameters(const std::string &problem_,
                "P_time"
                "\n");
     fmt::print(output,
-               "#{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n",
+               "#{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}\n",
                get_date_str(),
                problem,
                instance,
@@ -109,6 +112,7 @@ Parameters::Parameters(const std::string &problem_,
                initialization,
                nb_iter_local_search,
                max_time_local_search,
+               bound_nb_colors,
                local_search_,
                adaptive,
                window_size,

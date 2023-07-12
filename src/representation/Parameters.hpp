@@ -29,6 +29,7 @@ struct Parameters {
     const std::string initialization;
     const long nb_iter_local_search;
     const int max_time_local_search;
+    const int bound_nb_colors;
 
     // Adaptive
 
@@ -77,6 +78,7 @@ struct Parameters {
                         const std::string &initialization_,
                         const long nb_iter_local_search_,
                         const int max_time_local_search_,
+                        const int bound_nb_colors_,
                         const std::string &local_search_,
                         const std::string &adaptive_,
                         const int window_size_,

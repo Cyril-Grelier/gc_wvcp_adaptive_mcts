@@ -200,7 +200,15 @@ std::vector<Action> next_possible_moves(const Solution &solution) {
         return moves;
     }
 
+    int nb_colors = 0;
+    // each vertex need at most |N(v)| + 1 colors
+    int degree_p1 = static_cast<int>(Graph::g->neighborhood[next_vertex].size()) + 1;
+
     for (const auto color : solution.non_empty_colors()) {
+        ++nb_colors;
+        if (nb_colors > degree_p1 or nb_colors > Parameters::p->bound_nb_colors) {
+            continue;
+        }
         if (solution.conflicts_colors(color, next_vertex) == 0) {
             const int next_score =
                 solution.score_wvcp() + solution.delta_wvcp_score(next_vertex, color);
@@ -211,7 +219,10 @@ std::vector<Action> next_possible_moves(const Solution &solution) {
     }
     const int next_score = solution.score_wvcp() + Graph::g->weights[next_vertex];
     if (Solution::best_score_wvcp > next_score) {
-        moves.emplace_back(Action{next_vertex, -1, next_score});
+        if ((nb_colors + 1) < degree_p1 and
+            (nb_colors + 1) < Parameters::p->bound_nb_colors) {
+            moves.emplace_back(Action{next_vertex, -1, next_score});
+        }
     }
     std::sort(moves.begin(), moves.end(), compare_actions);
     return moves;
