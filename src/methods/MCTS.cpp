@@ -219,9 +219,7 @@ std::vector<Action> next_possible_moves(const Solution &solution) {
     }
     const int next_score = solution.score_wvcp() + Graph::g->weights[next_vertex];
     if (Solution::best_score_wvcp > next_score) {
-        if (((nb_colors + 1) < degree_p1 and
-             (nb_colors + 1) < Parameters::p->bound_nb_colors) or
-            nb_colors <= 1) {
+        if (nb_colors < degree_p1 and nb_colors < Parameters::p->bound_nb_colors) {
             moves.emplace_back(Action{next_vertex, -1, next_score});
         }
     }
