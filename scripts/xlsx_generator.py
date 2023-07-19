@@ -11,6 +11,7 @@ import re
 import statistics
 from glob import glob
 from typing import Any, Iterable
+from datetime import datetime
 
 import pandas as pd  # type: ignore
 from openpyxl import Workbook  # type: ignore
@@ -52,25 +53,27 @@ def main():
     """
     # Add method name and repertory of data of each method
     methods: list[tuple(str, str)] = [
+        ("with_bounds", "mcts_bounds_all/with_bounds"),
+        ("no_bounds", "mcts_bounds_all/no_bounds"),
         # ls - mcts+ls
-        ("AFISA", "afisa_original"),
-        ("MCTS+AFISA", "mcts+afisa_original"),
-        ("TabuWeight", "tabu_weight"),
-        ("MCTS+TabuWeight", "mcts+tabu_weight"),
-        ("RedLS", "redls"),
-        ("MCTS+RedLS", "mcts+redls"),
-        ("ILSTS", "ilsts"),
-        ("MCTS+ILSTS", "mcts+ilsts"),
+        # ("AFISA", "afisa_original"),
+        # ("MCTS+AFISA", "mcts+afisa_original"),
+        # ("TabuWeight", "tabu_weight"),
+        # ("MCTS+TabuWeight", "mcts+tabu_weight"),
+        # ("RedLS", "redls"),
+        # ("MCTS+RedLS", "mcts+redls"),
+        # ("ILSTS", "ilsts"),
+        # ("MCTS+ILSTS", "mcts+ilsts"),
         # ad
-        ("Random", "random"),
-        ("Roulette Wheel", "roulette_wheel"),
-        ("Pursuit", "pursuit"),
-        ("UCB", "ucb"),
-        ("NN", "neural_net"),
+        # ("Random", "random"),
+        # ("Roulette Wheel", "roulette_wheel"),
+        # ("Pursuit", "pursuit"),
+        # ("UCB", "ucb"),
+        # ("NN", "neural_net"),
     ]
     # pylint: disable = C0200
-    for i in range(len(methods)):
-        methods[i] = (methods[i][0], "all_methods_all_instances/" + methods[i][1])
+    # for i in range(len(methods)):
+    #     methods[i] = (methods[i][0], "all_methods_all_instances/" + methods[i][1])
 
     problem = "wvcp"
 
@@ -84,7 +87,7 @@ def main():
     instances_set = ("../instances_non_optimal", "non_optimal")
     instances_set = ("instance_list_wvcp", "all")
 
-    output_file = f"xlsx_files/all_results_{instances_set[1]}.xlsx"
+    output_file = f"xlsx_files/mcts__bounds_{instances_set[1]}.xlsx"
 
     with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
         instances = [i[:-1] for i in file.readlines()]
@@ -101,9 +104,11 @@ class Method:
         self.scores: list[float] = []
         self.times: list[float] = []
         self.optimal: bool = False
+        self.time_optimal: list[float] = []
         self.mean_score: float = 0
         self.best_score: int = 0
         self.mean_best_time: float = 0
+        self.mean_optimal_time: float = 0
         self.nb_best: int = 0
         self.nb_runs: int = 0
 
@@ -124,6 +129,22 @@ class Method:
                 nb_current_node: int = int(data["nb current node"].iloc[-1])
                 if nb_total_node > 1 and nb_current_node <= 1:
                     self.optimal = True
+                    lines = []
+                    with open(file_name, "r", encoding="utf8") as file:
+                        for line in file.readlines():
+                            if line.startswith("#"):
+                                lines.append(line[1::])
+                    # convert date (with format "year-month-day hour:minutes:seconds") to timestamp
+                    date_start = datetime.strptime(
+                        lines[1].split(",")[0], "%Y-%m-%d %H:%M:%S"
+                    )
+                    # try:
+                    date_end = datetime.strptime(lines[2][:-1], "%Y-%m-%d %H:%M:%S")
+                    self.time_optimal.append(
+                        (date_end - date_start).total_seconds()
+                    )
+                    # except ValueError:
+                    #     print(file_name, lines[2])
             self.scores.append(score_)
             self.times.append(time_)
         # if no available data
@@ -140,6 +161,10 @@ class Method:
                 for time, score in zip(self.times, self.scores)
                 if score == self.best_score
             ),
+            1,
+        )
+        self.mean_optimal_time = round(
+            statistics.mean(self.time_optimal if self.time_optimal else [float("inf")]),
             1,
         )
         self.nb_best = sum(1 for score in self.scores if score == self.best_score)
@@ -226,7 +251,6 @@ class Table:
         instances: list[str],
         problem: str,
     ) -> None:
-
         self.methods_names: list[str] = [m_name for m_name, _ in methods]
 
         self.gaps: list[tuple[str, str]] = []
@@ -334,7 +358,7 @@ class Table:
         # first row
         # first columns are the instances information then the methods names
         instance_info = ["instance", "|V|", "|E|", "BKS", "optim"]
-        columns_info = ["best", "avg", "time", "#"]
+        columns_info = ["best", "avg", "time", "optim time", "#"]
         line: list[int | str | float] = list(instance_info)
         line += [m for m in self.methods_names for _ in columns_info]
         sheet.append(line)
@@ -376,6 +400,9 @@ class Table:
                     method.best_score,
                     int(method.mean_score),
                     int(method.mean_best_time),
+                    int(method.mean_optimal_time)
+                    if method.mean_optimal_time != float("inf")
+                    else "",
                     f"{method.nb_best}/{method.nb_runs}"
                     if method.scores != [float("inf")]
                     else "0/0",
