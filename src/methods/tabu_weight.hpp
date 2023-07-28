@@ -10,3 +10,6 @@
  * @param verbose True if print csv line each time new best scores is found
  */
 void tabu_weight(Solution &solution, const bool verbose = false);
+
+void tabu_weight_neighborhood(Solution &solution, const bool verbose = false);
+void random_walk_wvcp(Solution &best_solution, const bool verbose);

@@ -47,10 +47,18 @@ local_search_ptr get_local_search_fct(const std::string &local_search) {
         return hill_climbing_one_move;
     if (local_search == "tabu_col")
         return tabu_col;
+    if (local_search == "tabu_col_neighborhood")
+        return tabu_col_neighborhood;
+    if (local_search == "random_walk_gcp")
+        return random_walk_gcp;
     if (local_search == "partial_col")
         return partial_col;
     if (local_search == "tabu_weight")
         return tabu_weight;
+    if (local_search == "tabu_weight_neighborhood")
+        return tabu_weight_neighborhood;
+    if (local_search == "random_walk_wvcp")
+        return random_walk_wvcp;
     if (local_search == "afisa")
         return afisa;
     if (local_search == "afisa_original")

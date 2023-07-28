@@ -83,19 +83,19 @@ with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
 
 method = "mcts"
 
-rand_seeds = list(range(1))
+rand_seeds = list(range(20))
 
 bounds = get_bounds_nb_colors()
-use_bounds = False
+use_bounds = True
 target = 0
 use_target = "false"  # false true
-objective = "optimality"  # optimality reached
+objective = "reached"  # optimality reached
 time_limit = 3600 * 1
 nb_max_iterations = 9000000000000000000
 initializations = [
     # "random",
-    # "constrained",
-    "deterministic",
+    "constrained",
+    # "deterministic",
 ]
 nb_iter_local_search = 9000000000000000000
 max_time_local_search = -1
@@ -131,13 +131,13 @@ window_sizes = [
     # 100,
 ]
 local_searchs = [
-    "none",
+    # "none",
     # "tabu_col",
     # "hill_climbing",
     # "afisa",
     # "afisa_original",
     # "tabu_weight",
-    # "redls",
+    "redls",
     # "ilsts",
     # "redls_freeze",
     # "ilsts:redls:tabu_weight:afisa_original:none"
@@ -145,8 +145,8 @@ local_searchs = [
     # "ilsts:redls:tabu_weight"
 ]
 simulations = [
-    "no_ls",
-    # "always_ls",
+    # "no_ls",
+    "always_ls",
     # "fit",
     # "depth",
     # "level",
@@ -154,10 +154,17 @@ simulations = [
     # "chance",
 ]
 O_time = 0
-P_time = 0.02
+P_times = [
+    0.01,
+    0.02,
+    0.04,
+    0.08,
+    0.1,
+    0.2,
+]
 
-output_directory = f"/scratch/LERIA/grelier_c/mcts_no_bounds_{instances_set[1]}"
-output_directory = f"./mcts_no_bounds_{instances_set[1]}"
+output_directory = f"/scratch/LERIA/grelier_c/mcts_time_ls_{instances_set[1]}"
+# output_directory = f"./mcts_time_ls_{instances_set[1]}"
 # output_directory = f"ad_{instances_set[1]}"
 
 os.mkdir(f"{output_directory}/")
@@ -166,9 +173,9 @@ for initialization in initializations:
         for local_search in local_searchs:
             for simulation in simulations:
                 for adaptive in adaptives:
-                    # for P_time in P_times:
-                    os.mkdir(f"{output_directory}/{adaptive}")
-                    os.mkdir(f"{output_directory}/{adaptive}/tbt")
+                    for P_time in P_times:
+                        os.mkdir(f"{output_directory}/redls_{P_time}")
+                        os.mkdir(f"{output_directory}/redls_{P_time}/tbt")
 
 with open("to_eval_mcts", "w", encoding="UTF8") as file:
     for initialization in initializations:
@@ -178,36 +185,37 @@ with open("to_eval_mcts", "w", encoding="UTF8") as file:
                     for window_size in window_sizes:
                         for simulation in simulations:
                             for instance in instances:
-                                # nb_max_iterations = int(
-                                #     3600 / (0.02 * get_nb_vertices(instance))
-                                # )
-                                target = get_target(instance, problem)
-                                bound = -1
-                                if use_bounds:
-                                    bound = bounds[instance]
-                                for rand_seed in rand_seeds:
-                                    file.write(
-                                        f"./gc_wvcp "
-                                        f" --problem {problem}"
-                                        f" --instance {instance}"
-                                        f" --method {method}"
-                                        f" --rand_seed {rand_seed}"
-                                        f" --target {target}"
-                                        f" --use_target {use_target}"
-                                        f" --objective {objective}"
-                                        f" --time_limit {time_limit}"
-                                        f" --nb_max_iterations {nb_max_iterations}"
-                                        f" --initialization {initialization}"
-                                        f" --nb_iter_local_search {nb_iter_local_search}"
-                                        f" --max_time_local_search {max_time_local_search}"
-                                        f" --bound_nb_colors {bound}"
-                                        f" --coeff_exploi_explo {coeff}"
-                                        f" --adaptive {adaptive}"
-                                        f" --window_size {window_size}"
-                                        f" --local_search {local_search}"
-                                        f" --simulation {simulation}"
-                                        f" --O_time {O_time}"
-                                        f" --P_time {P_time}"
-                                        f" --output_directory {output_directory}/{adaptive}"
-                                        "\n"
-                                    )
+                                for P_time in P_times:
+                                    # nb_max_iterations = int(
+                                    #     3600 / (0.02 * get_nb_vertices(instance))
+                                    # )
+                                    target = get_target(instance, problem)
+                                    bound = -1
+                                    if use_bounds:
+                                        bound = bounds[instance]
+                                    for rand_seed in rand_seeds:
+                                        file.write(
+                                            f"./gc_wvcp "
+                                            f" --problem {problem}"
+                                            f" --instance {instance}"
+                                            f" --method {method}"
+                                            f" --rand_seed {rand_seed}"
+                                            f" --target {target}"
+                                            f" --use_target {use_target}"
+                                            f" --objective {objective}"
+                                            f" --time_limit {time_limit}"
+                                            f" --nb_max_iterations {nb_max_iterations}"
+                                            f" --initialization {initialization}"
+                                            f" --nb_iter_local_search {nb_iter_local_search}"
+                                            f" --max_time_local_search {max_time_local_search}"
+                                            f" --bound_nb_colors {bound}"
+                                            f" --coeff_exploi_explo {coeff}"
+                                            f" --adaptive {adaptive}"
+                                            f" --window_size {window_size}"
+                                            f" --local_search {local_search}"
+                                            f" --simulation {simulation}"
+                                            f" --O_time {O_time}"
+                                            f" --P_time {P_time}"
+                                            f" --output_directory {output_directory}/redls_{P_time}"
+                                            "\n"
+                                        )

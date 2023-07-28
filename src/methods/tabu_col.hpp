@@ -24,3 +24,6 @@
  * @param verbose True if print csv line each time new best scores is found
  */
 void tabu_col(Solution &solution, const bool verbose = false);
+
+void tabu_col_neighborhood(Solution &solution, const bool verbose = false);
+void random_walk_gcp(Solution &best_solution, const bool verbose);
