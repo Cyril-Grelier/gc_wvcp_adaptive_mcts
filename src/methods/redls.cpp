@@ -23,6 +23,7 @@ void redls(Solution &best_solution, const bool verbose) {
                 assert(solution.check_solution());
             }
 
+            assert(solution.penalty() == 0);
             if (solution.score_wvcp() < best_solution.score_wvcp()) {
                 best_solution = solution.solution();
                 if (verbose) {

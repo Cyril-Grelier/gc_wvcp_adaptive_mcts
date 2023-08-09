@@ -32,18 +32,14 @@ bool M_1_2_3(ProxiSolutionILSTS &solution, const long iter, std::vector<long> &t
  *
  * @param solution solution
  * @param iter number of iterations for tabu list
- * @param min_cost minimal cost to do a grenade operator
- * @param min_vertex vertex to move
- * @param min_c color to use for the vertex
+ * @param grenade_one_lost grenade moves that leave one neighbor uncolored
  * @param tabu tabu list
  * @return true modification of the solution
  * @return false no modification
  */
 bool M_3(ProxiSolutionILSTS &solution,
          const long iter,
-         const int min_cost,
-         const int vertex,
-         const int min_color,
+         const std::vector<std::tuple<int, int>> &grenade_one_lost,
          std::vector<long> &tabu);
 
 /**
