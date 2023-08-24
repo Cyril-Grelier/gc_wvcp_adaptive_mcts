@@ -311,18 +311,18 @@ void random_walk_gcp(Solution &best_solution, const bool verbose) {
                 best_colorations.emplace_back(Coloration{vertex, color});
             }
 
-            // const float total = static_cast<float>(nb_improve + nb_regress +
-            // nb_neutral); fmt::print("{},{},{},{},{}\n",
-            //            turn,
-            //            solution.penalty(),
-            //            static_cast<float>(nb_improve) / total,
-            //            static_cast<float>(nb_regress) / total,
-            //            static_cast<float>(nb_neutral) / total);
-            fmt::print("{},{},{},{}\n",
+            const float total = static_cast<float>(nb_improve + nb_regress + nb_neutral);
+            fmt::print("{},{},{},{},{}\n",
                        turn,
                        solution.penalty(),
-                       nb_improve + nb_regress + nb_neutral,
-                       solution.line_csv());
+                       static_cast<float>(nb_improve) / total,
+                       static_cast<float>(nb_regress) / total,
+                       static_cast<float>(nb_neutral) / total);
+            // fmt::print("{},{},{},{}\n",
+            //            turn,
+            //            solution.penalty(),
+            //            nb_improve + nb_regress + nb_neutral,
+            //            solution.line_csv());
             const auto [vertex, color] = rd::choice(best_colorations);
             const int old_color = solution.delete_from_color(vertex);
             solution.add_to_color(vertex, color);

@@ -45,6 +45,28 @@ void greedy_deterministic(Solution &solution);
 void greedy_worst(Solution &solution);
 
 /**
+ * @brief Greedy algorithm, color vertices by saturation order
+ *
+ * code adapted from :
+ * R. Lewis
+ * Guide to Graph Colouring: Algorithms and Applications.
+ * 2021. doi: 10.1007/978-3-030-81054-2.
+ *
+ */
+void greedy_DSatur(Solution &solution);
+
+/**
+ * @brief Greedy algorithm, color vertices by independent set blocks
+ *
+ * code adapted from :
+ * R. Lewis
+ * Guide to Graph Colouring: Algorithms and Applications.
+ * 2021. doi: 10.1007/978-3-030-81054-2.
+ *
+ */
+void greedy_RLF(Solution &solution);
+
+/**
  * @brief Get the initialization
  *
  * @param initialization

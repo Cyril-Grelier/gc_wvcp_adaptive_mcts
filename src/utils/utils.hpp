@@ -7,6 +7,23 @@
 #include "../representation/Solution.hpp"
 
 /**
+ * @brief Search for the element in a sorted vector
+ *
+ * @tparam T value type
+ * @param vector container
+ * @param v value to find
+ * @return true the value is in the vector
+ * @return false the value is not in the vector
+ */
+template <class T> bool contains(const std::vector<T> &vector, const T &v) {
+    auto it =
+        std::lower_bound(vector.begin(), vector.end(), v, [](const T &l, const T &r) {
+            return l < r;
+        });
+    return it != vector.end() && *it == v;
+}
+
+/**
  * @brief Insert element in sorted vector
  *
  * @tparam T value type

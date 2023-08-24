@@ -87,7 +87,9 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
                 // "R50_9gb"
                 // "flat1000_76_0"
                 // "DSJC125.1g"
-                "GEOM20"
+                // "GEOM20"
+                // "GEOM20b"
+                // "p23"
                 // "zeroin.i.1"
                 // "p06"
                 // "r06"
@@ -96,6 +98,7 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
                 // "le450_25b"
                 // "queen12_12"
                 // "DSJR500.1"
+                "DSJC500.5"
                 // "p31"
                 // "inithx.i.1"
                 // "miles250"
@@ -126,8 +129,8 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "method (mcts, local_search)",
             cxxopts::value<std::string>()->default_value(
                 //
-                "mcts"
-                // "local_search"
+                // "mcts"
+                "local_search"
                 //
                 ));
 
@@ -138,6 +141,7 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
                 //
                 // "1"
                 std::to_string(time(nullptr))
+                // "3"
                 //
                 ));
 
@@ -147,6 +151,7 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             cxxopts::value<int>()->default_value(
                 //
                 "0"
+                // "8"
                 //
                 ));
 
@@ -188,13 +193,16 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
 
         options.allow_unrecognised_options().add_options()(
             "I,initialization",
-            "Initialization of the solutions (random, constrained, deterministic)",
+            "Initialization of the solutions (random, constrained, deterministic, "
+            "dsatur, rlf)",
             cxxopts::value<std::string>()->default_value(
                 //
                 // "total_random"
                 // "random"
                 // "constrained"
-                "deterministic"
+                // "deterministic"
+                // "dsatur"
+                "rlf"
                 //
                 ));
 
@@ -270,10 +278,13 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
                 // "tabu_weight"
                 // "tabu_col"
                 // "random_walk_wvcp"
+                // "random_walk_gcp"
                 // "partial_col"
                 // "afisa"
                 // "afisa_original"
                 // "redls"
+                // "tabu_col_neighborhood"
+                // "tabu_weight_neighborhood"
                 // "redls_freeze"
                 // "ilsts"
                 // "ilsts:redls"
