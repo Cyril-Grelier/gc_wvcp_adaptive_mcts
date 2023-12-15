@@ -150,7 +150,8 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "if the target score is reach, the search is stopped",
             cxxopts::value<int>()->default_value(
                 //
-                "0"
+                // "-1"
+                "47"
                 // "8"
                 //
                 ));
@@ -197,12 +198,12 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "dsatur, rlf)",
             cxxopts::value<std::string>()->default_value(
                 //
-                // "total_random"
+                "total_random"
                 // "random"
                 // "constrained"
                 // "deterministic"
                 // "dsatur"
-                "rlf"
+                // "rlf"
                 //
                 ));
 
@@ -273,11 +274,11 @@ std::unique_ptr<Method> parse(int argc, const char **argv) {
             "Local search selected (to give multiple separate with :)",
             cxxopts::value<std::string>()->default_value(
                 //
-                "none"
+                // "none"
                 // "hill_climbing"
                 // "tabu_weight"
                 // "tabu_col"
-                // "random_walk_wvcp"
+                "random_walk_wvcp"
                 // "random_walk_gcp"
                 // "partial_col"
                 // "afisa"

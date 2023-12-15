@@ -8,14 +8,16 @@ Graph Coloring - Weighted Vertex Coloring Problem - Adaptive Monte Carlo Tree Se
    :target: https://github.com/Cyril-Grelier/gc_wvcp_adaptive_mcts/blob/master/LICENSE
 
 
-This project proposes an MCTS algorithm for the weighted vertex coloring problem (WVCP) that selects local search operators during the search.
+This project proposes an MCTS algorithm for the weighted vertex coloring problem (WVCP) that selects local search operators during the search with hyperheuristics.
 
 This problem is a variant of the Graph Coloring Problem. Given a weighted graph :math:`G=(V,E)`, the set of vertices :math:`V`, the set of edges :math:`E` and let :math:`W` be the set of weights :math:`w(v)` associated to each vertex :math:`v` in :math:`V`, the WVCP consists in finding a partition of the vertices :math:`V` in into :math:`k` color groups :math:`S=(V_1,...,Vk)` :math:`(1 \leq k \leq |V|)` such that no adjacent vertices belong to the same color group and such that the objective function :math:`f(S) = \sum_{i=1}^{k}\max_{v\in V_i}{w(v)}` is minimized.
 
 This project is coded in C++ for the calculation part and in Python for the data analysis. This work is related to the article :
 
-TBA
-
+Monte Carlo Tree Search with Adaptive Simulation: A Case Study on Weighted Vertex Coloring
+Cyril Grelier, Olivier Goudet, Jin-Kao Hao
+Proceedings of the 23nd European Conference on Evolutionary Computation in Combinatorial Optimization (EvoCOP 2023) 
+https://link.springer.com/chapter/10.1007/978-3-031-30035-6_7
 
 Requirements
 ------------
@@ -144,6 +146,30 @@ Data analysis
 
 Make sure to set all required methods, instances, and output names directly in the script before running it.
 
+The outputs directory already contain the raw data from the results used to write my thesis, those results are more recent and are not included in the article.
+They are often better than the results in the article due to the correction of some bugs, some optimizations and the use of the -LTO flag during the compilation.
+
+To un-tar the archives in multiple files use the following command :
+
+    cat wvcp_all_mcts_ls.tgz.a* | tar xzf -
+
+The archives are created with this command :
+
+    split -b 45M wvcp_all_mcts_ls.tgz wvcp_all_mcts_ls.tgz.
+
+
+The raw data are in the following directories :
+	- wvcp greedy : ``outputs/wvcp_all_greedy``
+	- wvcp mcts+greedy : ``outputs/wvcp_all_mcts_greedy`` (with or without the use of bounds)
+	- gcp greedy : ``outputs/gcp_all_greedy`` (the code used for those results is not available in this repository and not public yet)
+	- gcp mcts+greedy : ``outputs/gcp_all_mcts_greedy`` (always with the use of bounds, the code used for those results is not available in this repository and not public yet)
+	- wvcp local search : ``outputs/wvcp_all_ls``
+	- wvcp mcts+ls : ``outputs/wvcp_all_mcts_ls`` (the number after the ls name is the time in seconds spent in the local search during the simulation t = 0.xx * \|V\|)
+	- wvcp mcts+hh : ``outputs/wvcp_all_mcts_hh``
+
+The ``xlsx_files`` directory contains the xlsx files generated from the raw data of the results used to write my thesis, those results are more recent and are not included in the article.
+They have been generated with the ``scripts/xlsx_generator.py`` script.
+Look at the main function of the script to see how to generate the xlsx files.
 
 Acknowledgements
 ----------------

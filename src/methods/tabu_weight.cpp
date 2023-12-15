@@ -71,7 +71,7 @@ void tabu_weight_neighborhood(Solution &best_solution, const bool verbose) {
     std::vector<long> tabu_list(Graph::g->nb_vertices, 0);
     Solution solution = best_solution;
     long turn = 0;
-    fmt::print("turn,score,%improve,%regress,%neutral\n");
+    fmt::print("turn,score,%improve,%regress,%neutral,{}\n", Solution::header_csv);
 
     while (not Parameters::p->time_limit_reached_sub_method(max_time) and
            turn < Parameters::p->nb_iter_local_search and
@@ -115,13 +115,24 @@ void tabu_weight_neighborhood(Solution &best_solution, const bool verbose) {
             }
         }
         if (not best_coloration.empty()) {
-            const float total = static_cast<float>(nb_improve + nb_regress + nb_neutral);
-            fmt::print("{},{},{},{},{}\n",
-                       turn,
-                       solution.score_wvcp(),
-                       static_cast<float>(nb_improve) / total,
-                       static_cast<float>(nb_regress) / total,
-                       static_cast<float>(nb_neutral) / total);
+
+            // if (turn > 1000000 and turn <= 2000000) {
+            if (turn <= 100000) {
+                const double total =
+                    static_cast<double>(nb_improve + nb_regress + nb_neutral);
+                fmt::print("{},{},{},{},{},{}\n",
+                           turn,
+                           solution.penalty(),
+                           static_cast<double>(nb_improve) / total,
+                           static_cast<double>(nb_regress) / total,
+                           static_cast<double>(nb_neutral) / total,
+                           solution.line_csv());
+            }
+            //
+            // if (turn == 2000000) {
+            else {
+                exit(0);
+            }
 
             const Coloration chosen_one = rd::choice(best_coloration);
             solution.delete_from_color(chosen_one.vertex);
@@ -154,7 +165,7 @@ void random_walk_wvcp(Solution &best_solution, const bool verbose) {
     std::vector<long> tabu_list(Graph::g->nb_vertices, 0);
     Solution solution = best_solution;
     long turn = 0;
-    fmt::print("turn,score,%improve,%regress,%neutral\n");
+    fmt::print("turn,score,%improve,%regress,%neutral,{}\n", solution.header_csv);
 
     while (not Parameters::p->time_limit_reached_sub_method(max_time) and
            turn < Parameters::p->nb_iter_local_search and
@@ -189,14 +200,24 @@ void random_walk_wvcp(Solution &best_solution, const bool verbose) {
                 best_coloration.emplace_back(Coloration{vertex, color});
             }
         }
-        const float total = static_cast<float>(nb_improve + nb_regress + nb_neutral);
-        fmt::print("{},{},{},{},{},{}\n",
-                   turn,
-                   solution.score_wvcp(),
-                   static_cast<float>(nb_improve) / total,
-                   static_cast<float>(nb_regress) / total,
-                   static_cast<float>(nb_neutral) / total,
-                   total);
+
+        // if (turn > 1000000 and turn <= 2000000) {
+        if (turn <= 100000) {
+            const double total =
+                static_cast<double>(nb_improve + nb_regress + nb_neutral);
+            fmt::print("{},{},{},{},{},{}\n",
+                       turn,
+                       solution.penalty(),
+                       static_cast<double>(nb_improve) / total,
+                       static_cast<double>(nb_regress) / total,
+                       static_cast<double>(nb_neutral) / total,
+                       solution.line_csv());
+        }
+        //
+        // if (turn == 2000000) {
+        else {
+            exit(0);
+        }
 
         const Coloration chosen_one = rd::choice(best_coloration);
         solution.delete_from_color(chosen_one.vertex);

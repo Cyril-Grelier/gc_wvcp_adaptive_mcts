@@ -56,7 +56,7 @@ instances_set = ("../instances_hard_wvcp", "hard_wvcp")
 instances_set = ("instance_list_wvcp", "all")
 
 # i,instance
-with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
+with open(f"../instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
     instances = [line[:-1] for line in file.readlines()]
 
 
@@ -70,35 +70,38 @@ objective = "reached"  # optimality reached
 time_limit = 3600 * 1
 initializations = [
     # "random",
-    "constrained",
+    # "constrained",
     # "deterministic",
+    "dsatur",
+    "rlf",
 ]
 nb_iter_local_search = 9000000000000000000
 max_time_local_search = time_limit
 local_searchs = [
-    # "none",
+    "none",
     # "tabu_col",
     # "hill_climbing",
     # "afisa",
-    "afisa_original",
-    "tabu_weight",
-    "redls",
-    "ilsts",
+    # "afisa_original",
+    # "tabu_weight",
+    # "redls",
+    # "ilsts",
 ]
 
 output_directory = f"/scratch/LERIA/grelier_c/ls_{instances_set[1]}"
+output_directory = f"../greedy_wvcp_{instances_set[1]}"
 
-os.mkdir(f"{output_directory}/")
-for initialization in initializations:
-    for local_search in local_searchs:
-        os.mkdir(f"{output_directory}/{local_search}")
-        os.mkdir(f"{output_directory}/{local_search}/tbt")
+# os.mkdir(f"{output_directory}/")
+# for initialization in initializations:
+#     for local_search in local_searchs:
+#         os.mkdir(f"{output_directory}/{initialization}")
+#         # os.mkdir(f"{output_directory}/{local_search}/tbt")
 
 with open("to_eval_ls", "w", encoding="UTF8") as file:
     for initialization in initializations:
         for local_search in local_searchs:
             for instance in instances:
-                target = get_target(instance, problem)
+                target = 0  # get_target(instance, problem)
                 for rand_seed in rand_seeds:
                     file.write(
                         f"./gc_wvcp "
@@ -114,6 +117,6 @@ with open("to_eval_ls", "w", encoding="UTF8") as file:
                         f" --nb_iter_local_search {nb_iter_local_search}"
                         f" --max_time_local_search {max_time_local_search}"
                         f" --local_search {local_search}"
-                        f" --output_directory {output_directory}/{local_search}"
+                        f" --output_directory {output_directory}/{initialization}"
                         "\n"
                     )

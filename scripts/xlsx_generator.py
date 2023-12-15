@@ -17,6 +17,8 @@ import pandas as pd  # type: ignore
 from openpyxl import Workbook  # type: ignore
 from openpyxl.styles import Alignment, Font  # type: ignore
 from openpyxl.utils import get_column_letter  # type: ignore
+from openpyxl.cell.rich_text import TextBlock, CellRichText  # type: ignore
+from openpyxl.cell.text import InlineFont  # type: ignore
 from scipy import stats  # type: ignore
 from tqdm import tqdm  # type: ignore
 
@@ -53,45 +55,128 @@ def main():
     """
     # Add method name and repertory of data of each method
     methods: list[tuple(str, str)] = [
-        ("with_bounds", "mcts_bounds_all/with_bounds"),
-        ("no_bounds", "mcts_bounds_all/no_bounds"),
-        # ls - mcts+ls
-        # ("AFISA", "afisa_original"),
-        # ("MCTS+AFISA", "mcts+afisa_original"),
-        # ("TabuWeight", "tabu_weight"),
-        # ("MCTS+TabuWeight", "mcts+tabu_weight"),
-        # ("RedLS", "redls"),
-        # ("MCTS+RedLS", "mcts+redls"),
-        # ("ILSTS", "ilsts"),
-        # ("MCTS+ILSTS", "mcts+ilsts"),
-        # ad
-        # ("Random", "random"),
-        # ("Roulette Wheel", "roulette_wheel"),
-        # ("Pursuit", "pursuit"),
-        # ("UCB", "ucb"),
-        # ("NN", "neural_net"),
+        #
+        # WVCP bound vs no bound
+        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/mcts_random_no_bounds"),
+        # ("MCTS+R bounds", "outputs/wvcp_all_mcts_greedy/mcts_random_bounds"),
+        # ("MCTS+C", "outputs/wvcp_all_mcts_greedy/mcts_constrained_no_bounds"),
+        # ("MCTS+C bounds", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
+        # ("MCTS+D", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_no_bounds"),
+        # ("MCTS+D bounds", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_bounds"),
+        #
+        # WVCP greedy vs MCTS+greedy
+        # ("R", "outputs/wvcp_all_greedy/random"),
+        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/mcts_random_bounds"),
+        # ("C", "outputs/wvcp_all_greedy/constrained"),
+        # ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
+        # ("D", "outputs/wvcp_all_greedy/deterministic"),
+        # ("MCTS+G", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_bounds"),
+        # ("DSatur", "outputs/wvcp_all_greedy/dsatur"),
+        # ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/mcts_dsatur_bounds"),
+        # ("RLF", "outputs/wvcp_all_greedy/rlf"),
+        # ("MCTS+RLF", "outputs/wvcp_all_mcts_greedy/mcts_rlf_bounds"),
+        # ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
+        # ("RedLS", "outputs/wvcp_all_ls/redls"),
+        # ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
+        #
+        # GCP greedy vs MCTS+greedy vs NRPA
+        # ("R", "outputs/gcp_all_greedy/random"),
+        # ("MCTS+R", "outputs/gcp_all_mcts_greedy/random"),
+        # ("C", "outputs/gcp_all_greedy/constrained"),
+        # ("MCTS+C", "outputs/gcp_all_mcts_greedy/constrained"),
+        # ("D", "outputs/gcp_all_greedy/deterministic"),
+        # ("MCTS+D", "outputs/gcp_all_mcts_greedy/deterministic"),
+        # ("DSatur", "outputs/gcp_all_greedy/DSatur"),
+        # ("MCTS+DSatur", "outputs/gcp_all_mcts_greedy/dsatur"),
+        # ("RLF", "outputs/gcp_all_greedy/RLF"),
+        # ("MCTS+RLF", "outputs/gcp_all_mcts_greedy/rlf"),
+        # ("NRPA", "outputs/NRPA"),
+        # ("TabuCol", "outputs/gcp_all_tco/tabu_col_optimized"),
+        #
+        # WVCP MCTS+LS variation of the time spent in LS
+        # ("MCTS+AFISA_0.01", "outputs/wvcp_all_mcts_ls/afisa_original_0.01"),
+        # ("MCTS+AFISA_0.02", "outputs/wvcp_all_mcts_ls/afisa_original_0.02"),
+        # ("MCTS+AFISA_0.04", "outputs/wvcp_all_mcts_ls/afisa_original_0.04"),
+        # ("MCTS+AFISA_0.08", "outputs/wvcp_all_mcts_ls/afisa_original_0.08"),
+        # ("MCTS+AFISA_0.1", "outputs/wvcp_all_mcts_ls/afisa_original_0.1"),
+        # ("MCTS+AFISA_0.2", "outputs/wvcp_all_mcts_ls/afisa_original_0.2"),
+        # ("MCTS+TW_0.01", "outputs/wvcp_all_mcts_ls/tabu_weight_0.01"),
+        # ("MCTS+TW_0.02", "outputs/wvcp_all_mcts_ls/tabu_weight_0.02"),
+        # ("MCTS+TW_0.04", "outputs/wvcp_all_mcts_ls/tabu_weight_0.04"),
+        # ("MCTS+TW_0.08", "outputs/wvcp_all_mcts_ls/tabu_weight_0.08"),
+        # ("MCTS+TW_0.1", "outputs/wvcp_all_mcts_ls/tabu_weight_0.1"),
+        # ("MCTS+TW_0.2", "outputs/wvcp_all_mcts_ls/tabu_weight_0.2"),
+        # ("MCTS+RedLS_0.01", "outputs/wvcp_all_mcts_ls/redls_0.01"),
+        # ("MCTS+RedLS_0.02", "outputs/wvcp_all_mcts_ls/redls_0.02"),
+        # ("MCTS+RedLS_0.04", "outputs/wvcp_all_mcts_ls/redls_0.04"),
+        # ("MCTS+RedLS_0.08", "outputs/wvcp_all_mcts_ls/redls_0.08"),
+        # ("MCTS+RedLS_0.1", "outputs/wvcp_all_mcts_ls/redls_0.1"),
+        # ("MCTS+RedLS_0.2", "outputs/wvcp_all_mcts_ls/redls_0.2"),
+        # ("MCTS+ILSTS_0.01", "outputs/wvcp_all_mcts_ls/ilsts_0.01"),
+        # ("MCTS+ILSTS_0.02", "outputs/wvcp_all_mcts_ls/ilsts_0.02"),
+        # ("MCTS+ILSTS_0.04", "outputs/wvcp_all_mcts_ls/ilsts_0.04"),
+        # ("MCTS+ILSTS_0.08", "outputs/wvcp_all_mcts_ls/ilsts_0.08"),
+        # ("MCTS+ILSTS_0.1", "outputs/wvcp_all_mcts_ls/ilsts_0.1"),
+        # ("MCTS+ILSTS_0.2", "outputs/wvcp_all_mcts_ls/ilsts_0.2"),
+        #
+        # WVCP LS vs MCTS+LS
+        ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
+        ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/mcts_dsatur_bounds"),
+        ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
+        ("MCTS+AFISA", "outputs/wvcp_all_mcts_ls/afisa_original_0.02"),
+        ("TW", "outputs/wvcp_all_ls/tabu_weight"),
+        ("MCTS+TW", "outputs/wvcp_all_mcts_ls/tabu_weight_0.02"),
+        ("RedLS", "outputs/wvcp_all_ls/redls"),
+        ("MCTS+RedLS", "outputs/wvcp_all_mcts_ls/redls_0.02"),
+        ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
+        ("MCTS+ILSTS", "outputs/wvcp_all_mcts_ls/ilsts_0.02"),
+        #
+        # WVCP MCTS+LS vs MCTS+HH (add the lines above for full display)
+        ("Random", "outputs/mcts_hh_all/random"),
+        ("Deleter", "outputs/mcts_hh_all/deleter"),
+        ("Roulette Wheel", "outputs/mcts_hh_all/roulette_wheel"),
+        ("UCB", "outputs/mcts_hh_all/ucb"),
+        ("Pursuit", "outputs/mcts_hh_all/pursuit"),
+        ("NN", "outputs/mcts_hh_all/neural_net"),
     ]
-    # pylint: disable = C0200
-    # for i in range(len(methods)):
-    #     methods[i] = (methods[i][0], "all_methods_all_instances/" + methods[i][1])
 
+    problem = "gcp"
     problem = "wvcp"
 
     # Choose the set of instances
-    instances_set = ("pxx", "pxx")
-    instances_set = ("rxx", "rxx")
-    instances_set = ("DIMACS_non_optimal", "dimacs_no")
-    instances_set = ("DIMACS_optimal", "dimacs_o")
-    instances_set = ("../instances_coeff", "instances_coeff")
-    instances_set = ("../instances_hard_wvcp", "hard_wvcp")
-    instances_set = ("../instances_non_optimal", "non_optimal")
+    instances_set = ("instance_list_gcp", "all")
+    instances_set = ("../gcp_hard", "hard")
+    instances_set = ("../gcp_medium", "medium")
+    instances_set = ("../gcp_easy", "easy")
+
+    instances_set = ("../DIMACS_hard", "dimacs_hard")
+    instances_set = ("../DIMACS_easy", "dimacs_easy")
+    instances_set = ("../rxx", "rxx")
+    instances_set = ("../pxx", "pxx")
     instances_set = ("instance_list_wvcp", "all")
 
-    output_file = f"xlsx_files/mcts__bounds_{instances_set[1]}.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy_bounds.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy.xlsx"
+    # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_article.xlsx"
+    # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_NRPA_article.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_time_ls.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_ls.xlsx"
+    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh_all.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh_best.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh_reduced_iter.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh_reduced_iter_article.xlsx"
+
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_greedy.xlsx"
 
     with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
         instances = [i[:-1] for i in file.readlines()]
-
+    # instances = [
+    #     "1-FullIns_4",
+    #     "1-FullIns_5",
+    #     "1-Insertions_6",
+    #     "queen16_16",
+    # ]
     table = Table(methods=methods, instances=instances, problem=problem)
     table.to_xlsx(output_file)
     print(output_file)
@@ -111,19 +196,121 @@ class Method:
         self.mean_optimal_time: float = 0
         self.nb_best: int = 0
         self.nb_runs: int = 0
+        self.nb_turns = []
+
+        iter_max = {
+            "C2000.5": 23,
+            "C2000.9": 23,
+            "DSJC1000.1": 44,
+            "DSJC1000.5": 44,
+            "DSJC1000.9": 44,
+            "DSJC500.1": 86,
+            "DSJC500.5": 86,
+            "DSJC500.9": 86,
+            "DSJC250.1": 164,
+            "DSJC250.5": 164,
+            "DSJC250.9": 164,
+            "DSJC125.5gb": 301,
+            "DSJC125.5g": 301,
+            "DSJC125.9gb": 20,
+            "DSJC125.9g": 20,
+            "flat1000_50_0": 44,
+            "flat1000_60_0": 44,
+            "flat1000_76_0": 44,
+            "latin_square_10": 49,
+            "le450_15a": 106,
+            "le450_15b": 101,
+            "le450_15c": 95,
+            "le450_15d": 95,
+            "le450_25a": 129,
+            "le450_25b": 20,
+            "le450_25c": 101,
+            "le450_25d": 101,
+            "queen10_10": 361,
+            "queen10_10gb": 361,
+            "queen10_10g": 20,
+            "queen11_11": 361,
+            "queen11_11gb": 361,
+            "queen11_11g": 361,
+            "queen12_12": 301,
+            "queen12_12gb": 301,
+            "queen12_12g": 301,
+            "queen13_13": 258,
+            "queen14_14": 226,
+            "queen15_15": 181,
+            "queen16_16": 164,
+            "wap01a": 21,
+            "wap02a": 21,
+            "wap03a": 10,
+            "wap04a": 10,
+            "wap05a": 55,
+            "wap06a": 52,
+            "wap07a": 26,
+            "wap08a": 26,
+        }
 
         # load data
+        # files = sorted(
+        #     glob(f"{repertory}/{instance_name}_[0-9]*_[0-9]*.csv"),
+        #     key=lambda f: int(re.sub(r"\D", "", f)),
+        # )
+        # if files:
+        #     for file_name in files:
+        #         data = pd.read_csv(file_name, comment="#")
+        #         time_: int = int(data.time.iloc[-1])
+        #         nb_uncolored_: int = int(data.nb_uncolored.iloc[-1])
+        #         penalty_: int = int(data.penalty.iloc[-1])
+        #         score_: int = int(data.nb_colors.iloc[-1])
+        #         if penalty_ != 0 or nb_uncolored_ != 0:
+        #             continue
+        #         if (
+        #             "nb total node" in data.columns
+        #             and "nb current node" in data.columns
+        #         ):
+        #             nb_total_node: int = int(data["nb total node"].iloc[-1])
+        #             nb_current_node: int = int(data["nb current node"].iloc[-1])
+        #             if nb_total_node > 1 and nb_current_node <= 1:
+        #                 self.optimal = True
+        #         self.scores.append(score_)
+        #         self.times.append(time_)
+        # else:
         files = sorted(
-            glob(f"outputs/{repertory}/{instance_name}_[0-9]*.csv"),
+            glob(f"{repertory}/{instance_name}_[0-9]*.csv"),
             key=lambda f: int(re.sub(r"\D", "", f)),
         )
-
         for file_name in files:
             data = pd.read_csv(file_name, comment="#")
             time_: int = int(data.time.iloc[-1])
+            # nb_uncolored_: int = int(data.nb_uncolored.iloc[-1])
+            # penalty_: int = int(data.penalty.iloc[-1])
+            # score_: int = int(data.nb_colors.iloc[-1])
+            # if penalty_ != 0 or nb_uncolored_ != 0:
+            #     continue
+
+            if data.penalty.iloc[-1] != 0:
+                print("error", file_name)
             if time_ < 0:
                 time_ = 0
-            score_: int = int(data.score.iloc[-1])
+            if self.name in {
+                "HEAD+Random",
+                "HEAD+Deleter",
+                "HEAD+Roulette",
+                "HEAD+UCB",
+                "HEAD+Pursuit",
+                "HEAD+NN",
+            }:
+                # data = data.loc[data.time <= 3600]
+                data = data.loc[data.turn <= iter_max[instance_name]]
+
+            score_: int = (
+                int(data.score.iloc[-1])
+                if "score" in data
+                else int(data.nb_colors.iloc[-1])
+            )
+            if "turn" in data:
+                nb_turns_: int = int(data.turn.iloc[-1])
+            else:
+                nb_turns_ = 1
             if "nb total node" in data.columns and "nb current node" in data.columns:
                 nb_total_node: int = int(data["nb total node"].iloc[-1])
                 nb_current_node: int = int(data["nb current node"].iloc[-1])
@@ -140,20 +327,35 @@ class Method:
                     )
                     # try:
                     date_end = datetime.strptime(lines[2][:-1], "%Y-%m-%d %H:%M:%S")
-                    self.time_optimal.append(
-                        (date_end - date_start).total_seconds()
-                    )
+                    self.time_optimal.append((date_end - date_start).total_seconds())
                     # except ValueError:
                     #     print(file_name, lines[2])
             self.scores.append(score_)
             self.times.append(time_)
-        # if no available data
+            self.nb_turns.append(nb_turns_)
+
         if not files:
+            files = sorted(
+                glob(f"{repertory}/{instance_name}_[0-9]*.txt"),
+                key=lambda f: int(re.sub(r"\D", "", f)),
+            )
+            for file_name in files:
+                with open(file_name, "r", encoding="utf8") as file:
+                    try:
+                        score_, time_ = file.readlines()[1].strip().split(",")
+                    except ValueError:
+                        print(file_name, file.readlines())
+                        score_ = "OF"
+                if score_ == "OF":
+                    continue
+                self.scores.append(int(score_))
+                self.times.append(float(time_))
+        # if no available data
+        if not files or not self.scores or not self.times:
             self.scores = [float("inf")]
             self.times = [float("inf")]
         # get mean, min,...
         self.mean_score = round(statistics.mean(self.scores), 1)
-        # self.mean_score = int(statistics.mean(self.scores))
         self.best_score = min(self.scores)
         self.mean_best_time = round(
             statistics.mean(
@@ -169,8 +371,6 @@ class Method:
         )
         self.nb_best = sum(1 for score in self.scores if score == self.best_score)
         self.nb_runs = len(self.scores)
-        # if self.scores:
-        #     print(stats.shapiro(self.scores).pvalue)
 
 
 class Gap:
@@ -186,7 +386,24 @@ class Gap:
                 p_value = 0
             else:
                 # _, p_value = stats.ttest_ind(m1.scores, m2.scores)
-                _, p_value = stats.wilcoxon(m1.scores, m2.scores)
+                try:
+                    _, p_value = stats.wilcoxon(m1.scores, m2.scores)
+                except ValueError as e:
+                    if sorted(m1.scores) == sorted(m2.scores):
+                        pass
+                    else:
+                        print("_" * 50)
+                        print(
+                            m1.name,
+                            sorted(m1.scores),
+                            m2.name,
+                            sorted(m2.scores),
+                            e,
+                            sep="\n",
+                        )
+                        print("-" * 50)
+                    p_value = 0
+
             self.p_value = round(p_value, 3)
 
             self.mean_score_difference = round(
@@ -233,7 +450,7 @@ class Instance:
         self.best_found: int = min(m.best_score for m in self.methods.values())
         self.best_mean: float = min(m.mean_score for m in self.methods.values())
 
-        # get information on the instance
+        # get informations on the instance
         self.nb_vertices, self.nb_edges = get_nb_vertices_edges(name)
         self.best_known_score, self.optimal = get_best_known_score(name, problem)
 
@@ -352,11 +569,10 @@ class Table:
         return "\n".join([str(instance) for instance in self.instances])
 
     def table_results(self, workbook: Workbook):
-        """generate the main table of results on each instance"""
         sheet = workbook.active
         sheet.title = "results"
         # first row
-        # first columns are the instances information then the methods names
+        # first columns are the instances informations then the methods names
         instance_info = ["instance", "|V|", "|E|", "BKS", "optim"]
         columns_info = ["best", "avg", "time", "optim time", "#"]
         line: list[int | str | float] = list(instance_info)
@@ -372,13 +588,13 @@ class Table:
             )
 
         # second row
-        # instance information then columns info
+        # instance informations then columns info
         line = list(instance_info)
         for _ in self.methods_names:
             line += list(columns_info)
         sheet.append(line)
 
-        # merge 2 firsts lines for instances information
+        # merge 2 firsts lines for instances informations
         for i in range(len(instance_info)):
             sheet.merge_cells(
                 start_row=1, end_row=2, start_column=i + 1, end_column=i + 1
@@ -398,9 +614,9 @@ class Table:
                 method = instance.methods[m]
                 line += [
                     method.best_score,
-                    int(method.mean_score),
-                    int(method.mean_best_time),
-                    int(method.mean_optimal_time)
+                    method.mean_score,
+                    method.mean_best_time,
+                    method.mean_optimal_time
                     if method.mean_optimal_time != float("inf")
                     else "",
                     f"{method.nb_best}/{method.nb_runs}"
@@ -431,7 +647,7 @@ class Table:
         # footer of the table with the number of best scores, ...
 
         # nb best scores
-        line = ["nb best known score"] * len(instance_info)
+        line = ["#BKS"] * len(instance_info)
         for m in self.methods_names:
             line += [f"{self.nb_best_score[m]}/{len(self.instances)}"] * len(
                 columns_info
@@ -453,7 +669,7 @@ class Table:
             )
 
         # nb best found
-        line = ["nb best found among the methods"] * len(instance_info)
+        line = ["#Best"] * len(instance_info)
         for m in self.methods_names:
             line += [f"{self.nb_best_found[m]}/{len(self.instances)}"] * len(
                 columns_info
@@ -474,7 +690,7 @@ class Table:
             )
 
         # nb best mean
-        line = ["nb best mean score among the methods"] * len(instance_info)
+        line = ["#Best Avg"] * len(instance_info)
         for m in self.methods_names:
             line += [f"{self.nb_best_mean[m]}/{len(self.instances)}"] * len(
                 columns_info
@@ -497,7 +713,7 @@ class Table:
             )
 
         # nb optimal
-        line = ["nb prove optimal"] * len(instance_info)
+        line = ["#Optimal"] * len(instance_info)
         for m in self.methods_names:
             line += [f"{self.nb_optim[m]}/{len(self.instances)}"] * len(columns_info)
         sheet.append(line)
@@ -517,7 +733,7 @@ class Table:
             )
 
         # nb optimal
-        line = ["nb times same score reached"] * len(instance_info)
+        line = ["#Same Score Reached"] * len(instance_info)
         for m in self.methods_names:
             nb_times_reach = 0
             nb_runs = 0
@@ -562,7 +778,6 @@ class Table:
         sheet.freeze_panes = sheet["F3"]
 
     def table_gaps(self, workbook: Workbook):
-        """generate the table on the gaps between each method"""
         sheet = workbook.create_sheet("gaps")
 
         instance_info = ["instance"]
@@ -581,13 +796,13 @@ class Table:
             )
 
         # second row
-        # instance information then columns info
+        # instance informations then columns info
         line = list(instance_info)
         for i in range(len(self.gaps)):
             line += list(columns_info)
         sheet.append(line)
 
-        # merge 2 firsts lines for instances information
+        # merge 2 firsts lines for instances informations
         for i in range(len(instance_info)):
             sheet.merge_cells(
                 start_row=1, end_row=2, start_column=i + 1, end_column=i + 1
@@ -694,8 +909,7 @@ class Table:
         # Freeze row and columns
         sheet.freeze_panes = sheet["B3"]
 
-    def table_comparison_p_value(self, workbook: Workbook):
-        """generate table that summaries the gaps on the score"""
+    def table_comparaison_p_value(self, workbook: Workbook):
         sheet = workbook.create_sheet("score")
         # first row with the methods names
         line: list[int | str | float] = [""]
@@ -767,8 +981,7 @@ class Table:
         for row, column_width in enumerate(column_widths, start=1):
             sheet.column_dimensions[get_column_letter(row)].width = column_width
 
-    def table_comparison_time(self, workbook: Workbook):
-        """generate table that summaries the gaps on the time"""
+    def table_comparaison_time(self, workbook: Workbook):
         sheet = workbook.create_sheet("time")
         # first row with the methods names
         line: list[str | int] = [""]
@@ -843,7 +1056,6 @@ class Table:
             sheet.column_dimensions[get_column_letter(row)].width = column_width
 
     def table_ranks(self, workbook: Workbook):
-        """generate table that ranks the methods (not very reliable)"""
         sheet = workbook.create_sheet("ranks")
         # first row
         line = [""]
@@ -886,7 +1098,6 @@ class Table:
             sheet.column_dimensions[get_column_letter(row)].width = column_width
 
     def table_summary_ranks(self, workbook: Workbook):
-        """generate table that ranks the methods (not very reliable)"""
         sheet = workbook.create_sheet("summary_ranks")
         # first row
         line: list[int | str | float] = [""]
@@ -924,6 +1135,296 @@ class Table:
         for row, column_width in enumerate(column_widths, start=1):
             sheet.column_dimensions[get_column_letter(row)].width = column_width
 
+    def table_results_article(self, workbook: Workbook):
+        sheet = workbook.create_sheet("results article")
+        # first row
+        # first columns are the instances informations then the methods names
+        instance_info = [
+            "instance",
+            # "|V|",
+            # "|E|",
+            "BKS",
+        ]
+        columns_info = ["best", "mean", "time"]
+        line: list[int | str | float] = list(instance_info)
+        line += [m for m in self.methods_names for _ in columns_info]
+        sheet.append(line)
+        # merge first row for methods names
+        for i in range(len(self.methods_names)):
+            sheet.merge_cells(
+                start_row=1,
+                end_row=1,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # second row
+        # instance informations then columns info
+        line = list(instance_info)
+        for _ in self.methods_names:
+            line += list(columns_info)
+        sheet.append(line)
+
+        # merge 2 firsts lines for instances informations
+        for i in range(len(instance_info)):
+            sheet.merge_cells(
+                start_row=1, end_row=2, start_column=i + 1, end_column=i + 1
+            )
+        base_font = sheet["A1"].font
+        # body of the table
+        # first columns are the instance info then the scores, times,... for each methods
+        for instance in self.instances:
+            line = [
+                instance.name,
+                # instance.nb_vertices,
+                # instance.nb_edges,
+                f"{instance.best_known_score}*"
+                if instance.optimal
+                else instance.best_known_score,
+            ]
+            for m in self.methods_names:
+                method = instance.methods[m]
+                # the line is the best score, the mean score and the mean time of best scores
+                # the best score is in bold and red if it is the best known score
+                # the best score is in bold and green if it is a new best found score
+                # the best score is in bold and blue if it is proved optimal
+                # the mean score is not print if it is the same as the best score
+                # cell_score = None
+                # cell_mean_score = ""
+                # if method.mean_score != method.best_score:
+                #     if method.mean_score == instance.best_mean:
+                #         cell_mean_score = TextBlock(
+                #             font=InlineFont(b=True, color=COLOR_BEST_FOUND),
+                #             text=f"~{method.mean_score}",
+                #         )
+                #     else:
+                #         cell_mean_score = TextBlock(
+                #             font=InlineFont(),
+                #             text=f"~{method.mean_score}",
+                #         )
+                # if method.optimal:
+                #     cell_score = CellRichText(
+                #         [
+                #             TextBlock(
+                #                 font=InlineFont(b=True, color=COLOR_OPTIMAL),
+                #                 text=f"{method.best_score}*",
+                #             ),
+                #             cell_mean_score,
+                #         ]
+                #     )
+                # elif method.best_score == instance.best_known_score:
+                #     cell_score = CellRichText(
+                #         [
+                #             TextBlock(
+                #                 font=InlineFont(b=True, color=COLOR_BEST),
+                #                 text=f"{method.best_score}",
+                #             ),
+                #             cell_mean_score,
+                #         ]
+                #     )
+                # elif method.best_score < instance.best_known_score:
+                #     cell_score = CellRichText(
+                #         [
+                #             TextBlock(
+                #                 font=InlineFont(b=True, color=COLOR_NEW_BEST),
+                #                 text=f"{method.best_score}",
+                #             ),
+                #             cell_mean_score,
+                #         ]
+                #     )
+                # elif method.best_score == instance.best_found:
+                #     cell_score = CellRichText(
+                #         [
+                #             TextBlock(
+                #                 font=InlineFont(b=True, color=COLOR_BEST_FOUND),
+                #                 text=f"{method.best_score}",
+                #             ),
+                #             cell_mean_score,
+                #         ]
+                #     )
+                # else:
+                #     cell_score = CellRichText(
+                #         [
+                #             TextBlock(
+                #                 font=InlineFont(),
+                #                 text=f"{method.best_score}",
+                #             ),
+                #             cell_mean_score,
+                #         ]
+                #     )
+
+                # line += [
+                #     cell_score,
+                #     int(method.mean_best_time),
+                # ]
+                line += [
+                    f"{method.best_score}*" if method.optimal else method.best_score,
+                    method.mean_score
+                    if method.mean_score != method.best_score
+                    and method.mean_score != float("inf")
+                    else "",
+                    int(method.mean_best_time)
+                    if method.mean_best_time != float("inf")
+                    else "",
+                ]
+            sheet.append(line)
+            for col, m in enumerate(self.methods_names):
+                method = instance.methods[m]
+                column_best_score = len(instance_info) + 1 + len(columns_info) * col
+                cell_best_score = sheet.cell(sheet.max_row, column_best_score)
+                column_mean = column_best_score + 1
+                cell_mean = sheet.cell(sheet.max_row, column_mean)
+                if method.best_score == float("inf"):
+                    continue
+                if method.best_score == instance.best_known_score:
+                    cell_best_score.font = Font(bold=True, color=COLOR_BEST)
+                elif method.best_score < instance.best_known_score:
+                    cell_best_score.font = Font(bold=True, color=COLOR_NEW_BEST)
+                elif method.best_score == instance.best_found:
+                    cell_best_score.font = Font(bold=True, color=COLOR_BEST_FOUND)
+                if method.optimal:
+                    cell_best_score.font = Font(bold=True, color=COLOR_OPTIMAL)
+                if (
+                    method.mean_score == float("inf")
+                    or method.mean_score == method.best_score
+                ):
+                    continue
+                if instance.best_mean == method.mean_score:
+                    cell_mean.font = Font(bold=True, color=COLOR_BEST_FOUND)
+
+        # footer of the table with the number of best scores, ...
+
+        # nb best scores
+        line = ["#BKS"] * len(instance_info)
+        for m in self.methods_names:
+            line += [f"{self.nb_best_score[m]}/{len(self.instances)}"] * len(
+                columns_info
+            )
+        sheet.append(line)
+        # merge footer
+        sheet.merge_cells(
+            start_row=sheet.max_row,
+            end_row=sheet.max_row,
+            start_column=1,
+            end_column=len(instance_info),
+        )
+        for i, _ in enumerate(self.methods_names):
+            sheet.merge_cells(
+                start_row=sheet.max_row,
+                end_row=sheet.max_row,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # nb best found
+        line = ["#Best"] * len(instance_info)
+        for m in self.methods_names:
+            line += [f"{self.nb_best_found[m]}/{len(self.instances)}"] * len(
+                columns_info
+            )
+        sheet.append(line)
+        sheet.merge_cells(
+            start_row=sheet.max_row,
+            end_row=sheet.max_row,
+            start_column=1,
+            end_column=len(instance_info),
+        )
+        for i, _ in enumerate(self.methods_names):
+            sheet.merge_cells(
+                start_row=sheet.max_row,
+                end_row=sheet.max_row,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # nb best mean
+        line = ["#Best Avg"] * len(instance_info)
+        for m in self.methods_names:
+            line += [f"{self.nb_best_mean[m]}/{len(self.instances)}"] * len(
+                columns_info
+            )
+        sheet.append(line)
+        # merge footer
+        sheet.merge_cells(
+            start_row=sheet.max_row,
+            end_row=sheet.max_row,
+            start_column=1,
+            end_column=len(instance_info),
+        )
+
+        for i, _ in enumerate(self.methods_names):
+            sheet.merge_cells(
+                start_row=sheet.max_row,
+                end_row=sheet.max_row,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # nb optimal
+        line = ["#Optimal"] * len(instance_info)
+        for m in self.methods_names:
+            line += [f"{self.nb_optim[m]}/{len(self.instances)}"] * len(columns_info)
+        sheet.append(line)
+        # merge footer
+        sheet.merge_cells(
+            start_row=sheet.max_row,
+            end_row=sheet.max_row,
+            start_column=1,
+            end_column=len(instance_info),
+        )
+        for i, _ in enumerate(self.methods_names):
+            sheet.merge_cells(
+                start_row=sheet.max_row,
+                end_row=sheet.max_row,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # nb optimal
+        line = ["#Same Score Reached"] * len(instance_info)
+        for m in self.methods_names:
+            nb_times_reach = 0
+            nb_runs = 0
+            for instance in self.instances:
+                nb_times_reach += instance.methods[m].nb_best
+                nb_runs += instance.methods[m].nb_runs
+            line += [f"{nb_times_reach}/{nb_runs}"] * len(columns_info)
+        sheet.append(line)
+        # merge footer
+        sheet.merge_cells(
+            start_row=sheet.max_row,
+            end_row=sheet.max_row,
+            start_column=1,
+            end_column=len(instance_info),
+        )
+        for i, _ in enumerate(self.methods_names):
+            sheet.merge_cells(
+                start_row=sheet.max_row,
+                end_row=sheet.max_row,
+                start_column=len(instance_info) + 1 + len(columns_info) * i,
+                end_column=len(instance_info) + len(columns_info) * (i + 1),
+            )
+
+        # Set alignment
+        for col_ in sheet.columns:
+            for cell in col_:
+                cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        # Set optimal width
+        column_widths: list[int] = []
+        for row in sheet:
+            for i, cell in enumerate(row):
+                if len(column_widths) > i:
+                    if len(str(cell.value)) + 1 > column_widths[i]:
+                        column_widths[i] = len(str(cell.value)) + 1
+                else:
+                    column_widths += [0]
+        for i, column_width in enumerate(column_widths, start=1):
+            sheet.column_dimensions[get_column_letter(i)].width = column_width
+
+        # Freeze row and columns
+        sheet.freeze_panes = sheet["C3"]
+
     def to_xlsx(self, file_name: str):
         """Convert the table to xlsx file"""
         workbook = Workbook()
@@ -938,11 +1439,11 @@ class Table:
 
         # summary of the gaps on the score with the p value
         print("generation comparison p value")
-        self.table_comparison_p_value(workbook)
+        self.table_comparaison_p_value(workbook)
 
         # summary of the gaps on the times
         print("generation comparison time")
-        self.table_comparison_time(workbook)
+        self.table_comparaison_time(workbook)
 
         # rank of the methods for each instances
         print("generation ranks")
@@ -952,6 +1453,8 @@ class Table:
         print("generation summary ranks")
         self.table_summary_ranks(workbook)
 
+        # results for article
+        self.table_results_article(workbook)
         workbook.save(file_name)
 
 

@@ -128,7 +128,7 @@ void tabu_col_neighborhood(Solution &best_solution, const bool verbose) {
     Solution solution(best_solution);
     int turn_main = 0;
 
-    fmt::print("turn,score,%improve,%regress,%neutral\n");
+    fmt::print("turn,score,%improve,%regress,%neutral,{}\n", solution.header_csv);
 
     while (not Parameters::p->time_limit_reached_sub_method(max_time) and
            turn_main < Parameters::p->nb_iter_local_search) {
@@ -140,15 +140,15 @@ void tabu_col_neighborhood(Solution &best_solution, const bool verbose) {
         }
         int best_found = solution.penalty();
 
-        int nb_improve = 0;
-        int nb_regress = 0;
-        int nb_neutral = 0;
         std::vector<std::vector<int>> tabu_matrix(
             Graph::g->nb_vertices, std::vector<int>(solution.nb_colors(), 0));
         long turn = 0;
         while (not Parameters::p->time_limit_reached_sub_method(max_time) and
                best_found != 0) {
 
+            int nb_improve = 0;
+            int nb_regress = 0;
+            int nb_neutral = 0;
             ++turn;
 
             int best_current = std::numeric_limits<int>::max();
@@ -197,13 +197,24 @@ void tabu_col_neighborhood(Solution &best_solution, const bool verbose) {
                 best_colorations.emplace_back(Coloration{vertex, color});
             }
 
-            const float total = static_cast<float>(nb_improve + nb_regress + nb_neutral);
-            fmt::print("{},{},{},{},{}\n",
-                       turn,
-                       solution.penalty(),
-                       static_cast<float>(nb_improve) / total,
-                       static_cast<float>(nb_regress) / total,
-                       static_cast<float>(nb_neutral) / total);
+            // if (turn > 1000000 and turn <= 2000000) {
+            if (turn <= 100000) {
+                const double total =
+                    static_cast<double>(nb_improve + nb_regress + nb_neutral);
+                fmt::print("{},{},{},{},{},{}\n",
+                           turn,
+                           solution.penalty(),
+                           static_cast<double>(nb_improve) / total,
+                           static_cast<double>(nb_regress) / total,
+                           static_cast<double>(nb_neutral) / total,
+                           solution.line_csv());
+            }
+            //
+            // if (turn == 2000000) {
+            else {
+                exit(0);
+            }
+
             const auto [vertex, color] = rd::choice(best_colorations);
             const int old_color = solution.delete_from_color(vertex);
             solution.add_to_color(vertex, color);
@@ -256,8 +267,7 @@ void random_walk_gcp(Solution &best_solution, const bool verbose) {
     Solution solution(best_solution);
     int turn_main = 0;
 
-    fmt::print("turn,score,nb_neighbors,{}\n", Solution::header_csv);
-    // fmt::print("turn,score,%improve,%regress,%neutral\n");
+    fmt::print("turn,score,%improve,%regress,%neutral,{}\n", Solution::header_csv);
 
     while (not Parameters::p->time_limit_reached_sub_method(max_time) and turn_main < 1) {
 
@@ -268,15 +278,15 @@ void random_walk_gcp(Solution &best_solution, const bool verbose) {
         }
         int best_found = solution.penalty();
 
-        int nb_improve = 0;
-        int nb_regress = 0;
-        int nb_neutral = 0;
         std::vector<std::vector<int>> tabu_matrix(
             Graph::g->nb_vertices, std::vector<int>(solution.nb_colors(), 0));
         long turn = 0;
         while (not Parameters::p->time_limit_reached_sub_method(max_time) and
                best_found != 0 and turn < Parameters::p->nb_iter_local_search) {
 
+            int nb_improve = 0;
+            int nb_regress = 0;
+            int nb_neutral = 0;
             ++turn;
 
             // int best_current = std::numeric_limits<int>::max();
@@ -311,18 +321,24 @@ void random_walk_gcp(Solution &best_solution, const bool verbose) {
                 best_colorations.emplace_back(Coloration{vertex, color});
             }
 
-            const float total = static_cast<float>(nb_improve + nb_regress + nb_neutral);
-            fmt::print("{},{},{},{},{}\n",
-                       turn,
-                       solution.penalty(),
-                       static_cast<float>(nb_improve) / total,
-                       static_cast<float>(nb_regress) / total,
-                       static_cast<float>(nb_neutral) / total);
-            // fmt::print("{},{},{},{}\n",
-            //            turn,
-            //            solution.penalty(),
-            //            nb_improve + nb_regress + nb_neutral,
-            //            solution.line_csv());
+            // if (turn > 1000000 and turn <= 2000000) {
+            if (turn <= 100000) {
+                const double total =
+                    static_cast<double>(nb_improve + nb_regress + nb_neutral);
+                fmt::print("{},{},{},{},{},{}\n",
+                           turn,
+                           solution.penalty(),
+                           static_cast<double>(nb_improve) / total,
+                           static_cast<double>(nb_regress) / total,
+                           static_cast<double>(nb_neutral) / total,
+                           solution.line_csv());
+            }
+            //
+            // if (turn == 2000000) {
+            else {
+                exit(0);
+            }
+
             const auto [vertex, color] = rd::choice(best_colorations);
             const int old_color = solution.delete_from_color(vertex);
             solution.add_to_color(vertex, color);

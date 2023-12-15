@@ -13,3 +13,4 @@ exhale
 scipy
 tqdm
 joblib
+statsmodels
