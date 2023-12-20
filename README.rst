@@ -152,8 +152,8 @@ They are often better than the results in the article due to the correction of s
 The raw data are in the following directories :
 	- gcp greedy : ``outputs/gcp_all_greedy`` (the code used for those results is not available in this repository and not public yet)
 	- gcp mcts+greedy : ``outputs/gcp_all_mcts_greedy`` (always with the use of bounds, the code used for those results is not available in this repository and not public yet)
-    - gcp NRPA : ``outputs/gcp_all_nrpa``
-    - gcp tabucol : ``outputs/gcp_all_tabucol`` (the code used for those results is not available in this repository and not public yet, the results are divided in 3 directories for space reason on github)
+    	- gcp NRPA : ``outputs/gcp_all_nrpa``
+    	- gcp tabucol : ``outputs/gcp_all_tabucol`` (the code used for those results is not available in this repository and not public yet, the results are divided in 3 directories for space reason on github)
 	- wvcp greedy : ``outputs/wvcp_all_greedy``
 	- wvcp mcts+greedy : ``outputs/wvcp_all_mcts_greedy`` (with or without the use of bounds)
 	- wvcp local search : ``outputs/wvcp_all_ls`` (divided in 2 directories for space reason on github)
