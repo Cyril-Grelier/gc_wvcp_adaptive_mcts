@@ -149,21 +149,14 @@ Make sure to set all required methods, instances, and output names directly in t
 The outputs directory already contain the raw data from the results used to write my thesis, those results are more recent and are not included in the article.
 They are often better than the results in the article due to the correction of some bugs, some optimizations and the use of the -LTO flag during the compilation.
 
-To un-tar the archives in multiple files use the following command :
-
-    cat wvcp_all_mcts_ls.tgz.a* | tar xzf -
-
-The archives are created with this command :
-
-    split -b 45M wvcp_all_mcts_ls.tgz wvcp_all_mcts_ls.tgz.
-
-
 The raw data are in the following directories :
-	- wvcp greedy : ``outputs/wvcp_all_greedy``
-	- wvcp mcts+greedy : ``outputs/wvcp_all_mcts_greedy`` (with or without the use of bounds)
 	- gcp greedy : ``outputs/gcp_all_greedy`` (the code used for those results is not available in this repository and not public yet)
 	- gcp mcts+greedy : ``outputs/gcp_all_mcts_greedy`` (always with the use of bounds, the code used for those results is not available in this repository and not public yet)
-	- wvcp local search : ``outputs/wvcp_all_ls``
+    - gcp NRPA : ``outputs/gcp_all_nrpa``
+    - gcp tabucol : ``outputs/gcp_all_tabucol`` (the code used for those results is not available in this repository and not public yet, the results are divided in 3 directories for space reason on github)
+	- wvcp greedy : ``outputs/wvcp_all_greedy``
+	- wvcp mcts+greedy : ``outputs/wvcp_all_mcts_greedy`` (with or without the use of bounds)
+	- wvcp local search : ``outputs/wvcp_all_ls`` (divided in 2 directories for space reason on github)
 	- wvcp mcts+ls : ``outputs/wvcp_all_mcts_ls`` (the number after the ls name is the time in seconds spent in the local search during the simulation t = 0.xx * \|V\|)
 	- wvcp mcts+hh : ``outputs/wvcp_all_mcts_hh``
 
@@ -178,10 +171,11 @@ We would like to thank Dr. Wen Sun for sharing the binary code of their
 AFISA algorithm [1] (the AFISA algorithm has been reimplemented from
 the article, `afisa_original`), Dr. Yiyuan Wang for sharing the code
 of their RedLS algorithm [2] (the RedLS algorithm has been
-reimplemented from the article, `redls`) and Pr. Bruno Nogueira for
+reimplemented from the article, `redls`), Pr. Bruno Nogueira for
 sharing the code of their ILS-TS algorithm [3] (some parts of the code
 has been used and adapted to the implementation of the project,
-`ilsts`).
+`ilsts`), and Pr. Tristan Cazenave for sharing the code of NRPA [4] 
+(used as in the orignal article with the reduced instances).
 
 -  [1] Sun, W., Hao, J.-K., Lai, X., Wu, Q., 2018. Adaptive feasible and
    infeasible tabu search for weighted vertex coloring. Information
@@ -193,6 +187,9 @@ has been used and adapted to the implementation of the project,
    search with tabu search for the weighted vertex coloring problem.
    Computers & Operations Research 125, 105087.
    https://doi.org/10.1016/j.cor.2020.105087
+-  [4] Cazenave, Tristan, Benjamin Negrevergne, and Florian Sikora.
+   “Monte Carlo Graph Coloring.” In Monte Carlo Search 2020, IJCAI Workshop.
+   Yokohama (virtual), Japan, 2020. https://hal.archives-ouvertes.fr/hal-03118170.
 
 
 
