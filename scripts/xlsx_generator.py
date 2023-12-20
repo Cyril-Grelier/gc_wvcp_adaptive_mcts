@@ -57,25 +57,26 @@ def main():
     methods: list[tuple(str, str)] = [
         #
         # WVCP bound vs no bound
-        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/mcts_random_no_bounds"),
-        # ("MCTS+R bounds", "outputs/wvcp_all_mcts_greedy/mcts_random_bounds"),
-        # ("MCTS+C", "outputs/wvcp_all_mcts_greedy/mcts_constrained_no_bounds"),
-        # ("MCTS+C bounds", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
-        # ("MCTS+D", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_no_bounds"),
-        # ("MCTS+D bounds", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_bounds"),
+        # ("MCTS+R no bounds", "outputs/wvcp_all_mcts_greedy_no_bounds/random"),
+        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/random"),
+        # ("MCTS+C no bounds", "outputs/wvcp_all_mcts_greedy_no_bounds/constrained"),
+        # ("MCTS+C", "outputs/wvcp_all_mcts_greedy/constrained"),
+        # ("MCTS+D no bounds", "outputs/wvcp_all_mcts_greedy_no_bounds/deterministic"),
+        # ("MCTS+D", "outputs/wvcp_all_mcts_greedy/deterministic"),
         #
         # WVCP greedy vs MCTS+greedy
         # ("R", "outputs/wvcp_all_greedy/random"),
-        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/mcts_random_bounds"),
+        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/random"),
         # ("C", "outputs/wvcp_all_greedy/constrained"),
-        # ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
+        # ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/constrained"),
         # ("D", "outputs/wvcp_all_greedy/deterministic"),
-        # ("MCTS+G", "outputs/wvcp_all_mcts_greedy/mcts_deterministic_bounds"),
+        # ("MCTS+G", "outputs/wvcp_all_mcts_greedy/deterministic"),
         # ("DSatur", "outputs/wvcp_all_greedy/dsatur"),
-        # ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/mcts_dsatur_bounds"),
+        # ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/dsatur"),
         # ("RLF", "outputs/wvcp_all_greedy/rlf"),
-        # ("MCTS+RLF", "outputs/wvcp_all_mcts_greedy/mcts_rlf_bounds"),
+        # ("MCTS+RLF", "outputs/wvcp_all_mcts_greedy/rlf"),
         # ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
+        # ("TabuWeight", "outputs/wvcp_all_ls/tabu_weight"),
         # ("RedLS", "outputs/wvcp_all_ls/redls"),
         # ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
         #
@@ -90,54 +91,54 @@ def main():
         # ("MCTS+DSatur", "outputs/gcp_all_mcts_greedy/dsatur"),
         # ("RLF", "outputs/gcp_all_greedy/RLF"),
         # ("MCTS+RLF", "outputs/gcp_all_mcts_greedy/rlf"),
-        # ("NRPA", "outputs/NRPA"),
-        # ("TabuCol", "outputs/gcp_all_tco/tabu_col_optimized"),
+        # ("NRPA", "outputs/gcp_all_NRPA"),
+        # ("TabuCol", "outputs/gcp_all_tabu_col/tabu_col_optimized"),
         #
         # WVCP MCTS+LS variation of the time spent in LS
-        # ("MCTS+AFISA_0.01", "outputs/wvcp_all_mcts_ls/afisa_original_0.01"),
-        # ("MCTS+AFISA_0.02", "outputs/wvcp_all_mcts_ls/afisa_original_0.02"),
-        # ("MCTS+AFISA_0.04", "outputs/wvcp_all_mcts_ls/afisa_original_0.04"),
-        # ("MCTS+AFISA_0.08", "outputs/wvcp_all_mcts_ls/afisa_original_0.08"),
-        # ("MCTS+AFISA_0.1", "outputs/wvcp_all_mcts_ls/afisa_original_0.1"),
-        # ("MCTS+AFISA_0.2", "outputs/wvcp_all_mcts_ls/afisa_original_0.2"),
-        # ("MCTS+TW_0.01", "outputs/wvcp_all_mcts_ls/tabu_weight_0.01"),
-        # ("MCTS+TW_0.02", "outputs/wvcp_all_mcts_ls/tabu_weight_0.02"),
-        # ("MCTS+TW_0.04", "outputs/wvcp_all_mcts_ls/tabu_weight_0.04"),
-        # ("MCTS+TW_0.08", "outputs/wvcp_all_mcts_ls/tabu_weight_0.08"),
-        # ("MCTS+TW_0.1", "outputs/wvcp_all_mcts_ls/tabu_weight_0.1"),
-        # ("MCTS+TW_0.2", "outputs/wvcp_all_mcts_ls/tabu_weight_0.2"),
-        # ("MCTS+RedLS_0.01", "outputs/wvcp_all_mcts_ls/redls_0.01"),
-        # ("MCTS+RedLS_0.02", "outputs/wvcp_all_mcts_ls/redls_0.02"),
-        # ("MCTS+RedLS_0.04", "outputs/wvcp_all_mcts_ls/redls_0.04"),
-        # ("MCTS+RedLS_0.08", "outputs/wvcp_all_mcts_ls/redls_0.08"),
-        # ("MCTS+RedLS_0.1", "outputs/wvcp_all_mcts_ls/redls_0.1"),
-        # ("MCTS+RedLS_0.2", "outputs/wvcp_all_mcts_ls/redls_0.2"),
-        # ("MCTS+ILSTS_0.01", "outputs/wvcp_all_mcts_ls/ilsts_0.01"),
-        # ("MCTS+ILSTS_0.02", "outputs/wvcp_all_mcts_ls/ilsts_0.02"),
-        # ("MCTS+ILSTS_0.04", "outputs/wvcp_all_mcts_ls/ilsts_0.04"),
-        # ("MCTS+ILSTS_0.08", "outputs/wvcp_all_mcts_ls/ilsts_0.08"),
-        # ("MCTS+ILSTS_0.1", "outputs/wvcp_all_mcts_ls/ilsts_0.1"),
-        # ("MCTS+ILSTS_0.2", "outputs/wvcp_all_mcts_ls/ilsts_0.2"),
+        # ("MCTS+AFISA_0.01", "outputs/wvcp_all_mcts_ls_0.01/afisa_original_0.01"),
+        # ("MCTS+AFISA_0.02", "outputs/wvcp_all_mcts_ls_0.02/afisa_original_0.02"),
+        # ("MCTS+AFISA_0.04", "outputs/wvcp_all_mcts_ls_0.04/afisa_original_0.04"),
+        # ("MCTS+AFISA_0.08", "outputs/wvcp_all_mcts_ls_0.08/afisa_original_0.08"),
+        # ("MCTS+AFISA_0.1", "outputs/wvcp_all_mcts_ls_0.1/afisa_original_0.1"),
+        # ("MCTS+AFISA_0.2", "outputs/wvcp_all_mcts_ls_0.2/afisa_original_0.2"),
+        # ("MCTS+TW_0.01", "outputs/wvcp_all_mcts_ls_0.01/tabu_weight_0.01"),
+        # ("MCTS+TW_0.02", "outputs/wvcp_all_mcts_ls_0.02/tabu_weight_0.02"),
+        # ("MCTS+TW_0.04", "outputs/wvcp_all_mcts_ls_0.04/tabu_weight_0.04"),
+        # ("MCTS+TW_0.08", "outputs/wvcp_all_mcts_ls_0.08/tabu_weight_0.08"),
+        # ("MCTS+TW_0.1", "outputs/wvcp_all_mcts_ls_0.1/tabu_weight_0.1"),
+        # ("MCTS+TW_0.2", "outputs/wvcp_all_mcts_ls_0.2/tabu_weight_0.2"),
+        # ("MCTS+RedLS_0.01", "outputs/wvcp_all_mcts_ls_0.01/redls_0.01"),
+        # ("MCTS+RedLS_0.02", "outputs/wvcp_all_mcts_ls_0.02/redls_0.02"),
+        # ("MCTS+RedLS_0.04", "outputs/wvcp_all_mcts_ls_0.04/redls_0.04"),
+        # ("MCTS+RedLS_0.08", "outputs/wvcp_all_mcts_ls_0.08/redls_0.08"),
+        # ("MCTS+RedLS_0.1", "outputs/wvcp_all_mcts_ls_0.1/redls_0.1"),
+        # ("MCTS+RedLS_0.2", "outputs/wvcp_all_mcts_ls_0.2/redls_0.2"),
+        # ("MCTS+ILSTS_0.01", "outputs/wvcp_all_mcts_ls_0.01/ilsts_0.01"),
+        # ("MCTS+ILSTS_0.02", "outputs/wvcp_all_mcts_ls_0.02/ilsts_0.02"),
+        # ("MCTS+ILSTS_0.04", "outputs/wvcp_all_mcts_ls_0.04/ilsts_0.04"),
+        # ("MCTS+ILSTS_0.08", "outputs/wvcp_all_mcts_ls_0.08/ilsts_0.08"),
+        # ("MCTS+ILSTS_0.1", "outputs/wvcp_all_mcts_ls_0.1/ilsts_0.1"),
+        # ("MCTS+ILSTS_0.2", "outputs/wvcp_all_mcts_ls_0.2/ilsts_0.2"),
         #
         # WVCP LS vs MCTS+LS
-        ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/mcts_constrained_bounds"),
-        ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/mcts_dsatur_bounds"),
+        ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/constrained"),
+        ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/dsatur"),
         ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
-        ("MCTS+AFISA", "outputs/wvcp_all_mcts_ls/afisa_original_0.02"),
-        ("TW", "outputs/wvcp_all_ls/tabu_weight"),
-        ("MCTS+TW", "outputs/wvcp_all_mcts_ls/tabu_weight_0.02"),
+        ("MCTS+AFISA", "outputs/wvcp_all_mcts_ls_0.02/afisa_original_0.02"),
+        ("TabuWeight", "outputs/wvcp_all_ls/tabu_weight"),
+        ("MCTS+TW", "outputs/wvcp_all_mcts_ls_0.02/tabu_weight_0.02"),
         ("RedLS", "outputs/wvcp_all_ls/redls"),
-        ("MCTS+RedLS", "outputs/wvcp_all_mcts_ls/redls_0.02"),
+        ("MCTS+RedLS", "outputs/wvcp_all_mcts_ls_0.2/redls_0.2"),
         ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
-        ("MCTS+ILSTS", "outputs/wvcp_all_mcts_ls/ilsts_0.02"),
+        ("MCTS+ILSTS", "outputs/wvcp_all_mcts_ls_0.02/ilsts_0.02"),
         #
         # WVCP MCTS+LS vs MCTS+HH (add the lines above for full display)
-        ("Random", "outputs/mcts_hh_all/random"),
-        ("Deleter", "outputs/mcts_hh_all/deleter"),
-        ("Roulette Wheel", "outputs/mcts_hh_all/roulette_wheel"),
-        ("UCB", "outputs/mcts_hh_all/ucb"),
-        ("Pursuit", "outputs/mcts_hh_all/pursuit"),
-        ("NN", "outputs/mcts_hh_all/neural_net"),
+        ("Random", "outputs/wvcp_all_mcts_hh/random"),
+        ("Deleter", "outputs/wvcp_all_mcts_hh/deleter"),
+        ("Roulette", "outputs/wvcp_all_mcts_hh/roulette_wheel"),
+        ("UCB", "outputs/wvcp_all_mcts_hh/ucb"),
+        ("Pursuit", "outputs/wvcp_all_mcts_hh/pursuit"),
+        ("NN", "outputs/wvcp_all_mcts_hh/neural_net"),
     ]
 
     problem = "gcp"
@@ -157,26 +158,15 @@ def main():
 
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy_bounds.xlsx"
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy.xlsx"
-    # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_article.xlsx"
-    # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_NRPA_article.xlsx"
+    # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_NRPA.xlsx"
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_time_ls.xlsx"
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_ls.xlsx"
-    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh_all.xlsx"
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh_best.xlsx"
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh.xlsx"
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh_reduced_iter.xlsx"
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_ma_ls_mcts_hh_reduced_iter_article.xlsx"
+    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_ls.xlsx"
+    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh.xlsx"
 
-    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_greedy.xlsx"
 
     with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
         instances = [i[:-1] for i in file.readlines()]
-    # instances = [
-    #     "1-FullIns_4",
-    #     "1-FullIns_5",
-    #     "1-Insertions_6",
-    #     "queen16_16",
-    # ]
+
     table = Table(methods=methods, instances=instances, problem=problem)
     table.to_xlsx(output_file)
     print(output_file)
