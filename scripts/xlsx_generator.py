@@ -6,6 +6,7 @@ Follow the main function to manage the files and parameters
 Gap compute the difference on the mean of two methods and give the p-value
 with a ttest.
 """
+
 # pylint: disable=C0115,C0103
 import re
 import statistics
@@ -79,6 +80,10 @@ def main():
         # ("TabuWeight", "outputs/wvcp_all_ls/tabu_weight"),
         # ("RedLS", "outputs/wvcp_all_ls/redls"),
         # ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
+        # ("MCTS+R", "outputs/wvcp_all_mcts_greedy/random"),
+        ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/constrained"),
+        # ("MCTS+G", "outputs/wvcp_all_mcts_greedy/deterministic"),
+        ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/dsatur"),
         #
         # GCP greedy vs MCTS+greedy vs NRPA
         # ("R", "outputs/gcp_all_greedy/random"),
@@ -121,24 +126,24 @@ def main():
         # ("MCTS+ILSTS_0.2", "outputs/wvcp_all_mcts_ls_0.2/ilsts_0.2"),
         #
         # WVCP LS vs MCTS+LS
-        ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/constrained"),
-        ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/dsatur"),
-        ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
-        ("MCTS+AFISA", "outputs/wvcp_all_mcts_ls_0.02/afisa_original_0.02"),
-        ("TabuWeight", "outputs/wvcp_all_ls/tabu_weight"),
-        ("MCTS+TW", "outputs/wvcp_all_mcts_ls_0.02/tabu_weight_0.02"),
-        ("RedLS", "outputs/wvcp_all_ls/redls"),
-        ("MCTS+RedLS", "outputs/wvcp_all_mcts_ls_0.2/redls_0.2"),
-        ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
-        ("MCTS+ILSTS", "outputs/wvcp_all_mcts_ls_0.02/ilsts_0.02"),
+        # ("MCTS+GR", "outputs/wvcp_all_mcts_greedy/constrained"),
+        # ("MCTS+DSatur", "outputs/wvcp_all_mcts_greedy/dsatur"),
+        # ("AFISA", "outputs/wvcp_all_ls/afisa_original"),
+        # ("MCTS+AFISA", "outputs/wvcp_all_mcts_ls_0.02/afisa_original_0.02"),
+        # ("TabuWeight", "outputs/wvcp_all_ls/tabu_weight"),
+        # ("MCTS+TW", "outputs/wvcp_all_mcts_ls_0.02/tabu_weight_0.02"),
+        # ("RedLS", "outputs/wvcp_all_ls/redls"),
+        # ("MCTS+RedLS", "outputs/wvcp_all_mcts_ls_0.2/redls_0.2"),
+        # ("ILSTS", "outputs/wvcp_all_ls/ilsts"),
+        # ("MCTS+ILSTS", "outputs/wvcp_all_mcts_ls_0.02/ilsts_0.02"),
         #
         # WVCP MCTS+LS vs MCTS+HH (add the lines above for full display)
-        ("Random", "outputs/wvcp_all_mcts_hh/random"),
-        ("Deleter", "outputs/wvcp_all_mcts_hh/deleter"),
-        ("Roulette", "outputs/wvcp_all_mcts_hh/roulette_wheel"),
-        ("UCB", "outputs/wvcp_all_mcts_hh/ucb"),
-        ("Pursuit", "outputs/wvcp_all_mcts_hh/pursuit"),
-        ("NN", "outputs/wvcp_all_mcts_hh/neural_net"),
+        # ("Random", "outputs/wvcp_all_mcts_hh/random"),
+        # ("Deleter", "outputs/wvcp_all_mcts_hh/deleter"),
+        # ("Roulette", "outputs/wvcp_all_mcts_hh/roulette_wheel"),
+        # ("UCB", "outputs/wvcp_all_mcts_hh/ucb"),
+        # ("Pursuit", "outputs/wvcp_all_mcts_hh/pursuit"),
+        # ("NN", "outputs/wvcp_all_mcts_hh/neural_net"),
     ]
 
     problem = "gcp"
@@ -158,11 +163,11 @@ def main():
 
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy_bounds.xlsx"
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy.xlsx"
+    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_greedy_ls.xlsx"
     # output_file = f"xlsx_files/gcp_{instances_set[1]}_mcts_greedy_NRPA.xlsx"
     # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_time_ls.xlsx"
-    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_ls.xlsx"
-    output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh.xlsx"
-
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_ls.xlsx"
+    # output_file = f"xlsx_files/wvcp_{instances_set[1]}_mcts_hh.xlsx"
 
     with open(f"instances/{instances_set[0]}.txt", "r", encoding="utf8") as file:
         instances = [i[:-1] for i in file.readlines()]
@@ -606,12 +611,16 @@ class Table:
                     method.best_score,
                     method.mean_score,
                     method.mean_best_time,
-                    method.mean_optimal_time
-                    if method.mean_optimal_time != float("inf")
-                    else "",
-                    f"{method.nb_best}/{method.nb_runs}"
-                    if method.scores != [float("inf")]
-                    else "0/0",
+                    (
+                        method.mean_optimal_time
+                        if method.mean_optimal_time != float("inf")
+                        else ""
+                    ),
+                    (
+                        f"{method.nb_best}/{method.nb_runs}"
+                        if method.scores != [float("inf")]
+                        else "0/0"
+                    ),
                 ]
             sheet.append(line)
             for col, m in enumerate(self.methods_names):
@@ -1168,9 +1177,11 @@ class Table:
                 instance.name,
                 # instance.nb_vertices,
                 # instance.nb_edges,
-                f"{instance.best_known_score}*"
-                if instance.optimal
-                else instance.best_known_score,
+                (
+                    f"{instance.best_known_score}*"
+                    if instance.optimal
+                    else instance.best_known_score
+                ),
             ]
             for m in self.methods_names:
                 method = instance.methods[m]
@@ -1249,13 +1260,17 @@ class Table:
                 # ]
                 line += [
                     f"{method.best_score}*" if method.optimal else method.best_score,
-                    method.mean_score
-                    if method.mean_score != method.best_score
-                    and method.mean_score != float("inf")
-                    else "",
-                    int(method.mean_best_time)
-                    if method.mean_best_time != float("inf")
-                    else "",
+                    (
+                        method.mean_score
+                        if method.mean_score != method.best_score
+                        and method.mean_score != float("inf")
+                        else ""
+                    ),
+                    (
+                        int(method.mean_best_time)
+                        if method.mean_best_time != float("inf")
+                        else ""
+                    ),
                 ]
             sheet.append(line)
             for col, m in enumerate(self.methods_names):
